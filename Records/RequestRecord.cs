@@ -19,12 +19,23 @@ namespace Warc
         /// </summary>
         public string? ContentType { get; set; }
 
-
         /// <summary>
         /// Optional field. Maps to the "WARC-IP-Address" WARC header.
         /// The IP address address contacted to retrieve any included content.
         /// </summary>
         public string? IpAddress { get; set; }
+
+        /// <summary>
+        /// Optional. Maps to the "WARC-Identified-Payload-Type".
+        /// The content type of the "meaningful" payload inside the content block (if any)
+        /// </summary>
+        public string? IdentifiedPayloadType { get; set; }
+
+        /// <summary>
+        /// Optional. Maps to the "WARC-Payload-Digest" header.
+        /// A digest of the "meaningful" payload inside the content block (if any)
+        /// </summary>
+        public string? PayloadDigest { get; set; }
 
         /// <summary>
         /// Optional field. Maps to the "WARC-Target-URI" WARC header.
@@ -54,6 +65,9 @@ namespace Warc
             AppendHeaderIfExists(builder, WarcHeaders.IpAddress, IpAddress);
             AppendHeaderIfExists(builder, WarcHeaders.TargetUri, TargetUri);
             AppendHeaderIfExists(builder, WarcHeaders.WarcInfoId, WarcInfoId);
+            AppendHeaderIfExists(builder, WarcHeaders.IdentifiedPayloadType, IdentifiedPayloadType);
+            AppendHeaderIfExists(builder, WarcHeaders.PayloadDigest, PayloadDigest);
+
         }
 
         protected override bool ParseRecordHeader(string name, string value)
@@ -70,6 +84,14 @@ namespace Warc
 
                 case NormalizedWarcHeaders.IpAddress:
                     IpAddress = value;
+                    return true;
+
+                case NormalizedWarcHeaders.IdentifiedPayloadType:
+                    IdentifiedPayloadType = value;
+                    return true;
+
+                case NormalizedWarcHeaders.PayloadDigest:
+                    PayloadDigest = value;
                     return true;
 
                 case NormalizedWarcHeaders.TargetUri:

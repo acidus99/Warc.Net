@@ -47,18 +47,6 @@ namespace Warc
         public Uri Id { get; set; } = CreateId();
 
         /// <summary>
-        /// Optional. Maps to the "WARC-Identified-Payload-Type".
-        /// The content type of the "meaningful" payload inside the content block (if any)
-        /// </summary>
-        public string? IdentifiedPayloadType { get; set; }
-
-        /// <summary>
-        /// Optional. Maps to the "WARC-Payload-Digest" header.
-        /// A digest of the "meaningful" payload inside the content block (if any)
-        /// </summary>
-        public string? PayloadDigest { get; set; }
-
-        /// <summary>
         /// Optional. Maps to the "WARC-Segment-Number" header.
         /// This record’s relative ordering in a sequence of segmented records.
         /// </summary>
@@ -141,14 +129,6 @@ namespace Warc
                     Date = DateTime.Parse(value);
                     return true;
 
-                case NormalizedWarcHeaders.IdentifiedPayloadType:
-                    IdentifiedPayloadType = value;
-                    return true;
-
-                case NormalizedWarcHeaders.PayloadDigest:
-                    PayloadDigest = value;
-                    return true;
-
                 case NormalizedWarcHeaders.RecordId:
                     Id = ParseUri(value);
                     return true;
@@ -201,8 +181,6 @@ namespace Warc
 
             //add common, optional headers next
             AppendHeaderIfExists(sb, WarcHeaders.BlockDigest, BlockDigest);
-            AppendHeaderIfExists(sb, WarcHeaders.IdentifiedPayloadType, IdentifiedPayloadType);
-            AppendHeaderIfExists(sb, WarcHeaders.PayloadDigest, PayloadDigest);
             AppendHeaderIfExists(sb, WarcHeaders.SegmentNumber, Segment);
             AppendHeaderIfExists(sb, WarcHeaders.Truncated, Truncated);
 
