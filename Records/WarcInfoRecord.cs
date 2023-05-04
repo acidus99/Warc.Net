@@ -19,6 +19,8 @@ namespace Warc
 
         public override string Type => RecordType.WarcInfo;
 
+        public WarcInfoRecord() { }
+
         internal WarcInfoRecord(RawRecord rawRecord)
             : base(rawRecord)
         { }		

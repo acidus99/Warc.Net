@@ -51,6 +51,8 @@ namespace Warc
         /// </summary>
         public Uri? WarcInfoId { get; set; }
 
+        public RequestRecord() { }
+
         internal RequestRecord(RawRecord rawRecord)
             : base(rawRecord)
         { }
