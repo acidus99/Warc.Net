@@ -18,21 +18,21 @@ namespace Warc
 		public void Add(string name, object value)
 			=> Add(name, value?.ToString() ?? "");
 
-        public byte[]? ToBytes()
-		{
+        public override string ToString()
+        {
             if (Count ==0)
             {
                 return null;
             }
             StringBuilder sb = new StringBuilder();
-            foreach (var field in this)
-            {
-                sb.AppendLine($"{field.Name}: {field.Value}");
-            }
-			return Encoding.UTF8.GetBytes(sb.ToString());
+			this.ForEach(x => sb.AppendLine($"{x.Name}: {x.Value}")); ;
+			return sb.ToString();
         }
 	}
 
+	/// <summary>
+	/// name/value pairs 
+	/// </summary>
 	public class WarcField
 	{
 		public required string Name { get; set; }
