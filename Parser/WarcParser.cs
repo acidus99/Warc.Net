@@ -24,6 +24,7 @@ public class WarcParser
         }
         var rawRecord = GetNextRawRecord();
 
+        //internal record-specific constructors handle additional parsing
         switch (rawRecord.Type)
         {
             case RecordType.Request:
@@ -34,11 +35,17 @@ public class WarcParser
 
             case RecordType.WarcInfo:
                 return new WarcInfoRecord(rawRecord);
+
+            //TODO: add more records
         }
 
         return null;
     }
 
+    /// <summary>
+    /// reads the stream and returns a minimally parsed record
+    /// </summary>
+    /// <returns></returns>
     private RawRecord GetNextRawRecord()
     {
         var nextRecord = new RawRecord();
