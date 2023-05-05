@@ -82,7 +82,7 @@ namespace Warc
         }
 
         /// <summary>
-        /// Parses the headers collectd by RawRecord
+        /// Parses the headers collected by RawRecord
         /// </summary>
         /// <param name="headers"></param>
         private void ParseHeaders(List<string> headers)
@@ -152,6 +152,10 @@ namespace Warc
         /// <param name="value"></param>
         protected abstract bool ParseRecordHeader(string name, string value);
 
+        /// <summary>
+        /// record-specific code to add record-specific headers to the record header
+        /// </summary>
+        /// <param name="builder"></param>
         protected abstract void AppendRecordHeaders(StringBuilder builder);
 
         public static Uri CreateId()
@@ -162,13 +166,23 @@ namespace Warc
 
         protected Uri ParseUri(string uri)
         {
-            if (uri[0] == '<')
+            if(uri.Length < 3)
+            {
+                throw new ArgumentException("Invalid URI: provided URI too short", nameof(uri));
+            }
+
+            //strip < > around URI per WARC spec, if they exist
+            if (uri[0] == '<' && uri[uri.Length-1] == '>')
             {
                 uri = uri.Substring(1, uri.Length - 2);
             }
             return new Uri(uri);
         }
 
+        /// <summary>
+        /// Get the header for the WARC Record
+        /// </summary>
+        /// <returns></returns>
         public string GetHeaders()
         {
             var sb = new StringBuilder();
@@ -195,9 +209,22 @@ namespace Warc
 
             return sb.ToString();
         }
+
+        /// <summary>
+        /// Helper, appends a header if a URL exists
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="name"></param>
+        /// <param name="url"></param>
         protected void AppendHeaderIfExists(StringBuilder builder, string name, Uri? url)
             => AppendHeaderIfExists(builder, name, FormatOptionalUrl(url));
 
+        /// <summary>
+        /// Helper, appends a header with a number value, if it exists
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="name"></param>
+        /// <param name="num"></param>
         protected void AppendHeaderIfExists(StringBuilder builder, string name, int? num)
             => AppendHeaderIfExists(builder, name, num?.ToString());
 
@@ -217,7 +244,7 @@ namespace Warc
 
         protected string? FormatOptionalUrl(Uri? url)
             => (url != null) ?
-                "<{url.AbsoluteUri}>" :
+                $"<{url.AbsoluteUri}>" :
                 null;
 
         protected string FormatDate(DateTime date)
