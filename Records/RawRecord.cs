@@ -3,7 +3,12 @@
 using System;
 
 /// <summary>
-/// Represents a minimumly parsed record. This is only used internally by the parser
+/// Represents a minimumly parsed record. This is only used internally by the parser.
+///
+/// - What type of record?
+/// - What's the version?
+/// - What's the content bytes and length (if any)
+/// - List of headerlines 
 /// </summary>
 internal class RawRecord
 {
