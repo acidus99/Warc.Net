@@ -23,7 +23,6 @@ public class WarcWriter : IDisposable
     {
         if (string.IsNullOrEmpty(filePath))
         {
-            // FIXME: Add a test case
             throw new ArgumentNullException(nameof(filePath), "Destination path and filename for the WARC must be specified");
         }
 
@@ -32,7 +31,6 @@ public class WarcWriter : IDisposable
         // Ensures that the path exists
         if (!Directory.Exists(info.DirectoryName))
         {
-            // FIXME: Add a test case
             throw new ArgumentException("Path to output WARC doesn't exist.", nameof(filePath));
         }
 
@@ -46,7 +44,6 @@ public class WarcWriter : IDisposable
         }
         else if (isForcedCompression)
         {
-            // FIXME: Add a test case
             IsCompressed = true;
         }
         else
@@ -75,7 +72,7 @@ public class WarcWriter : IDisposable
 
     public void Dispose()
     {
-        Dispose(isDisposing: true);
+        Dispose(true);
         GC.SuppressFinalize(this);
     }
 

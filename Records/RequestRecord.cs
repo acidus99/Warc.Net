@@ -6,7 +6,6 @@ namespace Warc
 {
 	public class RequestRecord : WarcRecord
 	{
-
         /// <summary>
         /// Optional field. Maps to the "WARC-Concurrent-To" WARC header.
         ///  The WARC-Record-ID of any records created as part of the same capture event as the current record. Relates this record to one or more records.
