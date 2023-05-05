@@ -5,6 +5,31 @@ namespace Warc
 {
 	public class WarcInfoRecord : WarcRecord
 	{
+
+        /// <summary>
+        /// Helper property, lets use set/read UTF-8 string for the ContentBlock for this record
+        /// </summary>
+        public string? ContentText
+        {
+            get
+            {
+                return ContentLength > 0 ?
+                    Encoding.UTF8.GetString(ContentBlock!) :
+                    null;
+            }
+
+            set
+            {
+                if (value == null)
+                {
+                    ContentBlock = null;
+                } else
+                {
+                    ContentBlock = Encoding.UTF8.GetBytes(value);
+                }
+            }
+        }
+
         /// <summary>
         /// Optional field. Maps to the "Content-Type" WARC header.
         /// Only makes sense with a non-empty Content Block
