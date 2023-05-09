@@ -64,7 +64,12 @@ namespace Warc
             }
             AppendHeaderIfExists(builder, WarcHeaders.ContentType, ContentType);
             AppendHeaderIfExists(builder, WarcHeaders.IpAddress, IpAddress);
-            AppendHeaderIfExists(builder, WarcHeaders.TargetUri, TargetUri);
+
+            if(TargetUri != null)
+            {
+                builder.Append(FormatHeader(WarcHeaders.TargetUri, TargetUri.AbsoluteUri));
+            }
+
             AppendHeaderIfExists(builder, WarcHeaders.WarcInfoId, WarcInfoId);
             AppendHeaderIfExists(builder, WarcHeaders.IdentifiedPayloadType, IdentifiedPayloadType);
             AppendHeaderIfExists(builder, WarcHeaders.PayloadDigest, PayloadDigest);

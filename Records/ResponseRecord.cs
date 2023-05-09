@@ -19,7 +19,6 @@ namespace Warc
         /// </summary>
         public string? ContentType { get; set; }
 
-
         /// <summary>
         /// Optional field. Maps to the "WARC-IP-Address" WARC header.
         /// The IP address address contacted to retrieve any included content.
@@ -66,7 +65,10 @@ namespace Warc
             }
             AppendHeaderIfExists(builder, WarcHeaders.ContentType, ContentType);
             AppendHeaderIfExists(builder, WarcHeaders.IpAddress, IpAddress);
-            AppendHeaderIfExists(builder, WarcHeaders.TargetUri, TargetUri);
+            if (TargetUri != null)
+            {
+                builder.Append(FormatHeader(WarcHeaders.TargetUri, TargetUri.AbsoluteUri));
+            }
             AppendHeaderIfExists(builder, WarcHeaders.WarcInfoId, WarcInfoId);
             AppendHeaderIfExists(builder, WarcHeaders.IdentifiedPayloadType, IdentifiedPayloadType);
             AppendHeaderIfExists(builder, WarcHeaders.PayloadDigest, PayloadDigest);
