@@ -95,7 +95,7 @@ namespace Warc
                     var name = headerLine.Substring(0, index).ToLower();
                     var value = headerLine.Substring(index+1).Trim();
 
-                    //first see if its a common header
+                    //first see if it's a common header
                     if(ParseCommonHeader(name, value))
                     {
                         continue;
@@ -106,7 +106,7 @@ namespace Warc
                         continue;
                     }
                     //unknonwn header, so added to list of custom headers
-                    //if duplicates, last value wins
+                    //if there are duplicates, last value of the header wins
                     CustomHeaders[name] = value;
                 }
             }
@@ -144,7 +144,6 @@ namespace Warc
             return false;
         }
 
-
         /// <summary>
         /// Calls the record-specific header parsing logic
         /// </summary>
@@ -153,7 +152,8 @@ namespace Warc
         protected abstract bool ParseRecordHeader(string name, string value);
 
         /// <summary>
-        /// record-specific code to add record-specific headers to the record header
+        /// Calls the record-specific code to add record-specific headers to the record header
+        /// being built.
         /// </summary>
         /// <param name="builder"></param>
         protected abstract void AppendRecordHeaders(StringBuilder builder);
@@ -251,4 +251,3 @@ namespace Warc
             => date.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
     }
 }
-

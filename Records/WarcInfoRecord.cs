@@ -7,7 +7,8 @@ namespace Warc
 	{
 
         /// <summary>
-        /// Helper property, lets use set/read UTF-8 string for the ContentBlock for this record
+        /// Helper property, lets use set/get UTF-8 string for the ContentBlock for this record.
+        /// If you perfer, you can just set the ContentBlock directly
         /// </summary>
         public string? ContentText
         {
@@ -23,7 +24,8 @@ namespace Warc
                 if (value == null)
                 {
                     ContentBlock = null;
-                } else
+                }
+                else
                 {
                     ContentBlock = Encoding.UTF8.GetBytes(value);
                 }

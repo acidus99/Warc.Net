@@ -10,8 +10,11 @@ public class WarcParser
     Stream input;
     LineReader lineReader;
 
+    public string Filename { get; private set; }
+
     public WarcParser(string filename)
     {
+        Filename = filename;
         input = File.OpenRead(filename);
         lineReader = new LineReader(input);
     }
@@ -57,11 +60,14 @@ public class WarcParser
             line = lineReader.GetLine();
         }
 
+        //does the record have a body? if so, read it in
         if (nextRecord.ContentLength! > 0)
         {
             //now read in exactly the size of the content bytes
             input.ReadExactly(nextRecord.ContentBytes!, 0, nextRecord.ContentLength.Value);
         }
+
+        //are we at the end of the WARC file?
         if (input.Length == input.Position + 4)
         {
             HasRecords = false;
@@ -69,7 +75,7 @@ public class WarcParser
         }
         else
         {
-            // skip the trailing CRLFCRLF
+            // skip the record's trailing CRLFCRLF
             input.Seek(4, SeekOrigin.Current);
         }
 
