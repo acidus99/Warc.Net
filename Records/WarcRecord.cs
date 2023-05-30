@@ -107,8 +107,16 @@ namespace Warc
                     }
                     //unknonwn header, so added to list of custom headers
                     //if there are duplicates, last value of the header wins
-                    CustomHeaders[name] = value;
+                    AddCustomHeader(name, value);
                 }
+            }
+        }
+
+        public void AddCustomHeader(string name, string? value)
+        {
+            if(!string.IsNullOrWhiteSpace(value))
+            {
+                CustomHeaders[name] = value;
             }
         }
 
