@@ -25,21 +25,29 @@ public class WarcParser
         {
             return null;
         }
-        var rawRecord = GetNextRawRecord();
-
-        //internal record-specific constructors handle additional parsing
-        switch (rawRecord.Type)
+        try
         {
-            case RecordType.Request:
-                return new RequestRecord(rawRecord);
+            var rawRecord = GetNextRawRecord();
 
-            case RecordType.Response:
-                return new ResponseRecord(rawRecord);
+            //internal record-specific constructors handle additional parsing
+            switch (rawRecord.Type)
+            {
+                case RecordType.Request:
+                    return new RequestRecord(rawRecord);
 
-            case RecordType.WarcInfo:
-                return new WarcInfoRecord(rawRecord);
+                case RecordType.Response:
+                    return new ResponseRecord(rawRecord);
 
-            //TODO: add more records
+                case RecordType.WarcInfo:
+                    return new WarcInfoRecord(rawRecord);
+
+                    //TODO: add more records
+            }
+        }
+        catch (ApplicationException ex)
+        {
+            Console.WriteLine($"Error read WARC Record: {ex.Message}");
+            Console.WriteLine("Skipping...");
         }
 
         return null;
