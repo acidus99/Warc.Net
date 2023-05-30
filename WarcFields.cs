@@ -22,7 +22,7 @@ namespace Warc
         {
             if (Count ==0)
             {
-                return null;
+                return "";
             }
             StringBuilder sb = new StringBuilder();
 			this.ForEach(x => sb.AppendLine($"{x.Name}: {x.Value}")); ;
