@@ -121,6 +121,18 @@ namespace Warc
         }
 
         /// <summary>
+        /// Sets the Date if the supplied value is non-null.Otherwise current value persists
+        /// </summary>
+        /// <param name="dateTime"></param>
+        public void SetDate(DateTime? dateTime)
+        {
+            if(dateTime != null)
+            {
+                Date = dateTime.Value;
+            }
+        }
+
+        /// <summary>
         /// Parses the few headers that are common to all record types
         /// </summary>
         /// <param name="name"></param>
