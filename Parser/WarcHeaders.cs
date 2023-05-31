@@ -15,6 +15,7 @@ namespace Warc
         public const string IpAddress = "WARC-IP-Address";
         public const string PayloadDigest = "WARC-Payload-Digest";
         public const string RecordId = "WARC-Record-ID";
+        public const string RefersTo = "WARC-Refers-To";
         public const string SegmentNumber = "WARC-Segment-Number";
         public const string TargetUri = "WARC-Target-URI";
         public const string Truncated = "WARC-Truncated";
@@ -35,7 +36,8 @@ namespace Warc
 		public const string IpAddress = "warc-ip-address";
 		public const string PayloadDigest = "warc-payload-digest";
         public const string RecordId = "warc-record-id";
-		public const string SegmentNumber = "warc-segment-number";
+        public const string RefersTo = "warc-refers-to";
+        public const string SegmentNumber = "warc-segment-number";
 		public const string TargetUri = "warc-target-uri";
 		public const string Truncated = "warc-truncated";
 		public const string WarcInfoId = "warc-warcinfo-id";
