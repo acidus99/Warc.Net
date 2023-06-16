@@ -32,6 +32,9 @@ public class WarcParser
             //internal record-specific constructors handle additional parsing
             switch (rawRecord.Type)
             {
+                case RecordType.Metadata:
+                    return new MetadataRecord(rawRecord);
+
                 case RecordType.Request:
                     return new RequestRecord(rawRecord);
 
