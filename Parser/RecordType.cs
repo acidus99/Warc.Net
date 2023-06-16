@@ -14,6 +14,7 @@ namespace Warc
         public const string Response = "response";
         public const string Revisit = "revisit";
         public const string WarcInfo = "warcinfo";
+        public const string Unknown = "unknown";
     }
 }
 

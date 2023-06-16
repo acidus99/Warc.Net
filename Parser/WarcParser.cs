@@ -44,7 +44,8 @@ public class WarcParser
                 case RecordType.WarcInfo:
                     return new WarcInfoRecord(rawRecord);
 
-                    //TODO: add more records
+                default:
+                    return new UnknownRecord(rawRecord);
             }
         }
         catch (ApplicationException ex)
