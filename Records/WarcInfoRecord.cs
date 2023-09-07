@@ -32,17 +32,33 @@ namespace Warc
             }
         }
 
+        private string? contentType;
         /// <summary>
         /// Optional field. Maps to the "Content-Type" WARC header.
         /// Only makes sense with a non-empty Content Block
         /// </summary>
-        public string? ContentType { get; set; }
+        public string? ContentType
+        {
+            get => contentType;
+            set
+            {
+                contentType = ValidateLegalFieldCharacters(value);
+            }
+        }
 
+        private string? filename;
         /// <summary>
         /// Optional field. Maps to the "WARC-Filename" WARC header.
         /// The filename containing this warcinfo record.
         /// </summary>
-        public string? Filename { get; set; }
+        public string? Filename
+        {
+            get => filename;
+            set
+            {
+                filename = ValidateLegalFieldCharacters(value);
+            }
+        }
 
         public override string Type => RecordType.WarcInfo;
 
@@ -57,11 +73,11 @@ namespace Warc
             switch (name)
             {
                 case NormalizedWarcHeaders.ContentType:
-                    ContentType = value;
+                    contentType = value;
                     return true;
 
                 case NormalizedWarcHeaders.Filename:
-                    Filename = value;
+                    filename = value;
                     return true;
             }
             return false;

@@ -10,11 +10,20 @@ namespace Warc
     /// </summary>
 	public abstract class WarcRecord
 	{
+
+        private string? blockDigest;
         /// <summary>
         /// Optional. Maps to the "WARC-Block-Digest" header.
         /// A digest of the Records' content block
         /// </summary>
-        public string? BlockDigest { get; set; }
+        public string? BlockDigest
+        {
+            get => blockDigest;
+            set
+            {
+                blockDigest = ValidateLegalFieldCharacters(value);
+            }
+        }
 
         /// <summary>
         /// Optional. Maps to the body of the record
@@ -52,11 +61,19 @@ namespace Warc
         /// </summary>
         public int? Segment { get; set; }
 
+        private string? truncated;
         /// <summary>
         /// Optional. Maps to the "WARC-Truncated" header.
         /// A reason why the full contents of something wasn't stored in a record
         /// </summary>
-        public string? Truncated { get; set; }
+        public string? Truncated
+        {
+            get => truncated;
+            set
+            {
+                truncated = ValidateLegalFieldCharacters(value);
+            }
+        }
 
         /// <summary>
         /// Required. Maps to the "WARC-Type" header.
@@ -76,32 +93,36 @@ namespace Warc
         internal WarcRecord(RawRecord rawRecord)
         {
             ContentBlock = rawRecord.ContentBytes;
+            //version is validated as not null earlier in the parser
             Version = rawRecord.Version!;
 
-            ParseHeaders(rawRecord.headers);
+            ParseHeaders(rawRecord);
         }
 
         /// <summary>
         /// Parses the headers collected by RawRecord
         /// </summary>
         /// <param name="headers"></param>
-        private void ParseHeaders(List<string> headers)
+        private void ParseHeaders(RawRecord rawRecord)
         {
-            foreach (var headerLine in headers)
+            int fieldNumber = 0;
+            foreach (var headerLine in rawRecord.headers)
             {
+                fieldNumber++;
+
                 int index = headerLine.IndexOf(':');
                 if (index > 0 && index + 1 < headerLine.Length)
                 {
                     var name = headerLine.Substring(0, index).ToLower();
-                    var value = headerLine.Substring(index+1).Trim();
+                    var value = headerLine.Substring(index + 1).Trim();
 
                     //first see if it's a common header
-                    if(ParseCommonHeader(name, value))
+                    if (ParseCommonHeader(name, value))
                     {
                         continue;
                     }
                     //check for record-specific headers
-                    if(ParseRecordHeader(name, value))
+                    if (ParseRecordHeader(name, value))
                     {
                         continue;
                     }
@@ -109,13 +130,30 @@ namespace Warc
                     //if there are duplicates, last value of the header wins
                     AddCustomHeader(name, value);
                 }
+                else
+                {
+                    throw new WarcFormatException(rawRecord.Offset, $"Malformed WARC field. Missing ':' delimiter in header line {fieldNumber}");
+                }
             }
         }
 
+        /// <summary>
+        /// Adds a custom WARC field. Field name and value are checked for illegal characters
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public void AddCustomHeader(string name, string? value)
         {
-            if(!string.IsNullOrWhiteSpace(value))
+            if(name == null)
             {
+                throw new ArgumentNullException(nameof(name), "Customer field name cannot be null.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                name = ValidateLegalFieldCharacters(name)!;
+                value = ValidateLegalFieldCharacters(value)!;
                 CustomHeaders[name] = value;
             }
         }
@@ -164,8 +202,25 @@ namespace Warc
             return false;
         }
 
+        protected string? ValidateLegalFieldCharacters(string? field)
+        {
+            if(field == null)
+            {
+                return field;
+            }
+
+            foreach(var c in field)
+            {
+                if(char.IsControl(c) || c == 127)
+                {
+                    throw new FormatException($"Field cannot contain illegal character '0x{((byte)c).ToString("X2")}'.");
+                }
+            }
+            return field;
+        }
+
         /// <summary>
-        /// Calls the record-specific header parsing logic
+        /// Calls the record-specific header parsing logic. strings will already have been checked for illegal characters
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>

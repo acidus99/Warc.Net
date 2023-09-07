@@ -12,29 +12,61 @@ namespace Warc
         /// </summary>
         public List<Uri> ConcurrentTo = new List<Uri>();
 
+        private string? contentType;
         /// <summary>
         /// Optional field. Maps to the "Content-Type" WARC header.
         /// Only makes sense with a non-empty Content Block
         /// </summary>
-        public string? ContentType { get; set; }
+        public string? ContentType
+        {
+            get => contentType;
+            set
+            {
+                contentType = ValidateLegalFieldCharacters(value);
+            }
+        }
 
+        private string? ipAddress;
         /// <summary>
         /// Optional field. Maps to the "WARC-IP-Address" WARC header.
         /// The IP address address contacted to retrieve any included content.
         /// </summary>
-        public string? IpAddress { get; set; }
+        public string? IpAddress
+        {
+            get => ipAddress;
+            set
+            {
+                ipAddress = ValidateLegalFieldCharacters(value);
+            }
+        }
 
+        private string? identifiedPayloadType;
         /// <summary>
         /// Optional. Maps to the "WARC-Identified-Payload-Type".
         /// The content type of the "meaningful" payload inside the content block (if any)
         /// </summary>
-        public string? IdentifiedPayloadType { get; set; }
+        public string? IdentifiedPayloadType
+        {
+            get => identifiedPayloadType;
+            set
+            {
+                identifiedPayloadType = ValidateLegalFieldCharacters(value);
+            }
+        }
 
+        private string? payloadDigest;
         /// <summary>
         /// Optional. Maps to the "WARC-Payload-Digest" header.
         /// A digest of the "meaningful" payload inside the content block (if any)
         /// </summary>
-        public string? PayloadDigest { get; set; }
+        public string? PayloadDigest
+        {
+            get => payloadDigest;
+            set
+            {
+                payloadDigest = ValidateLegalFieldCharacters(value);
+            }
+        }
 
         /// <summary>
         /// Optional field. Maps to the "WARC-Target-URI" WARC header.
@@ -81,7 +113,7 @@ namespace Warc
             switch (name)
             {
                 case NormalizedWarcHeaders.ContentType:
-                    ContentType = value;
+                    contentType = value;
                     return true;
 
                 case NormalizedWarcHeaders.ConcurrentTo:
@@ -89,15 +121,15 @@ namespace Warc
                     return true;
 
                 case NormalizedWarcHeaders.IpAddress:
-                    IpAddress = value;
+                    ipAddress = value;
                     return true;
 
                 case NormalizedWarcHeaders.IdentifiedPayloadType:
-                    IdentifiedPayloadType = value;
+                    identifiedPayloadType = value;
                     return true;
 
                 case NormalizedWarcHeaders.PayloadDigest:
-                    PayloadDigest = value;
+                    payloadDigest = value;
                     return true;
 
                 case NormalizedWarcHeaders.TargetUri:
