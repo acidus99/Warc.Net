@@ -150,5 +150,6 @@ public class WarcWriter : IDisposable
         stream.WriteByte(LineFeed);
         stream.WriteByte(CarriageReturn);
         stream.WriteByte(LineFeed);
+        stream.Flush();
     }
 }
