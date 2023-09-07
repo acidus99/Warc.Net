@@ -6,8 +6,10 @@ using System.Text;
 public class WarcParser
 {
 
+    byte[] endOfRecordBuffer = new byte[4];
+
     public bool HasRecords { get; private set; } = true;
-    Stream input;
+    Stream inputStream;
     LineReader lineReader;
 
     public string Filename { get; private set; }
@@ -15,8 +17,8 @@ public class WarcParser
     public WarcParser(string filename)
     {
         Filename = filename;
-        input = File.OpenRead(filename);
-        lineReader = new LineReader(input);
+        inputStream = File.OpenRead(filename);
+        lineReader = new LineReader(inputStream);
     }
 
     public WarcRecord? GetNext()
@@ -76,21 +78,22 @@ public class WarcParser
         if (nextRecord.ContentLength! > 0)
         {
             //now read in exactly the size of the content bytes
-            input.ReadExactly(nextRecord.ContentBytes!, 0, nextRecord.ContentLength.Value);
+            inputStream.ReadExactly(nextRecord.ContentBytes!, 0, nextRecord.ContentLength.Value);
         }
 
-        //are we at the end of the WARC file?
-        if (input.Length == input.Position + 4)
+        //read the trailing CRLFCRLF
+        inputStream.ReadExactly(endOfRecordBuffer, 0, 4);
+        //verify CRLFCRLF
+        if (endOfRecordBuffer[0] != 13 ||
+            endOfRecordBuffer[1] != 10 ||
+            endOfRecordBuffer[2] != 13 ||
+            endOfRecordBuffer[3] != 10)
         {
-            HasRecords = false;
-            input.Close();
-        }
-        else
-        {
-            // skip the record's trailing CRLFCRLF
-            input.Seek(4, SeekOrigin.Current);
+            int xxx = 5;
+            //throw new FormatException("Did not see CRLFCRLF at end of record!");
         }
 
+        //TODO: are we at the end of the file?
         return nextRecord;
     }
 }
