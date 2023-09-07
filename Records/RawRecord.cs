@@ -26,6 +26,16 @@ internal class RawRecord
 
     public List<string> headers = new List<string>(16);
 
+    /// <summary>
+    /// The byte offset of beginning of this WARC record in the file
+    /// </summary>
+    public long Offset { get; set; }
+
+    internal RawRecord(long offset)
+    {
+        Offset = offset;
+    }
+
     public void AddHeaderLine(string headerLine)
     {
         if(Version == null)
@@ -51,7 +61,6 @@ internal class RawRecord
             if (string.Compare(headerLine, 0, HeaderContentLength, 0, HeaderContentLength.Length, true) == 0)
             {
                 ContentLength = Convert.ToInt32(headerLine.Substring(HeaderContentLength.Length));
-                //known that we know the length, we can allocate exactly that size
                 ContentBytes = new byte[ContentLength.Value];
                 return;
             }
