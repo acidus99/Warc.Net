@@ -98,21 +98,30 @@ public class WarcParser
 
         EnsureRequiredRawFields(nextRecord);
 
-        //does the record have a body? if so, read it in
-        if (nextRecord.ContentLength! > 0)
+        try
         {
-            //now read in exactly the size of the content bytes
-            inputStream.ReadExactly(nextRecord.ContentBytes!, 0, nextRecord.ContentLength.Value);
-        }
 
-        //read and verify the trailing CRLFCRLF
-        inputStream.ReadExactly(endOfRecordBuffer, 0, 4);
-        if (endOfRecordBuffer[0] != 13 ||
-            endOfRecordBuffer[1] != 10 ||
-            endOfRecordBuffer[2] != 13 ||
-            endOfRecordBuffer[3] != 10)
+            //does the record have a body? if so, read it in
+            if (nextRecord.ContentLength! > 0)
+            {
+                //now read in exactly the size of the content bytes
+                inputStream.ReadExactly(nextRecord.ContentBytes!, 0, nextRecord.ContentLength.Value);
+            }
+
+            //read and verify the trailing CRLFCRLF
+            inputStream.ReadExactly(endOfRecordBuffer, 0, 4);
+            if (endOfRecordBuffer[0] != 13 ||
+                endOfRecordBuffer[1] != 10 ||
+                endOfRecordBuffer[2] != 13 ||
+                endOfRecordBuffer[3] != 10)
+            {
+                throw new WarcFormatException(inputStream.Position, "Could not find CRLFCRLF at end of record. Record's Content-Length field may be incorrect.");
+            }
+
+        }
+        catch (EndOfStreamException)
         {
-            throw new WarcFormatException(inputStream.Position, "Could not find CRLFCRLF at end of record. Record's Content-Length field may be incorrect.");
+            throw new WarcFormatException(inputStream.Position, "File ends with incomplete record. Record's Content-Length field may be incorrect, or record is prematurely truncated.");
         }
 
         if(inputStream.Position >= inputStream.Length)
