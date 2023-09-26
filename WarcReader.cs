@@ -3,7 +3,7 @@
 using System.Collections;
 using System.IO.Compression;
 
-public class WarcReader
+public class WarcReader : IDisposable
 {
     byte[] endOfRecordBuffer = new byte[4];
 
@@ -14,6 +14,7 @@ public class WarcReader
 
     LineReader lineReader;
     bool isCompressed = false;
+    private bool isDisposed;
 
     public string Filename { get; private set; }
 
@@ -144,4 +145,26 @@ public class WarcReader
         return nextRecord;
     }
 
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!isDisposed)
+        {
+            if (disposing)
+            {
+                inputStream.Close();
+                inputStream.Dispose();
+
+                fileStream.Close();
+                fileStream.Dispose();
+            }
+            isDisposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
 }
