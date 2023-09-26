@@ -131,7 +131,7 @@ public abstract class WarcRecord
             }
             else
             {
-                throw new WarcFormatException(rawRecord.Offset, $"Malformed WARC field. Missing ':' delimiter in header line {fieldNumber}");
+                throw new WarcFormatException($"Malformed WARC field. Missing ':' delimiter in line {fieldNumber}.", rawRecord);
             }
         }
     }

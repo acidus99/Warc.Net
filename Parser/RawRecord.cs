@@ -29,10 +29,13 @@ internal class RawRecord
     /// <summary>
     /// The byte offset of beginning of this WARC record in the file
     /// </summary>
-    public long Offset { get; set; }
+    public readonly long? Offset;
 
-    internal RawRecord(long offset)
+    public readonly int RecordNumber;
+
+    internal RawRecord(int record, long? offset)
     {
+        RecordNumber = record;
         Offset = offset;
     }
 

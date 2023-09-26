@@ -15,6 +15,7 @@ public class WarcReader : IDisposable
     LineReader lineReader;
     bool isCompressed = false;
     private bool isDisposed;
+    int recordNumber = 0;
 
     public string Filename { get; private set; }
 
@@ -34,7 +35,7 @@ public class WarcReader : IDisposable
             new GZipStream(fileStream, CompressionMode.Decompress) :
             fileStream;
 
-        lineReader = new LineReader();
+        lineReader = new LineReader(inputStream);
 
         List<string> foo = new List<string>();
     }
@@ -80,16 +81,16 @@ public class WarcReader : IDisposable
     {
         if (rawRecord.Type == null)
         {
-            throw new WarcFormatException(rawRecord.Offset, "Record missing required WARC Type field.");
+            throw new WarcFormatException("Record missing required WARC Type field.", recordNumber, GetFileOffset());
         }
         if (rawRecord.Version == null)
         {
-            throw new WarcFormatException(rawRecord.Offset, "Record missing required WARC Version field.");
+            throw new WarcFormatException("Record missing required WARC Version field.", recordNumber, GetFileOffset());
         }
 
         if (rawRecord.ContentLength == null)
         {
-            throw new WarcFormatException(rawRecord.Offset, "Record missing required Content-Length field.");
+            throw new WarcFormatException("Record missing required Content-Length field.", recordNumber, GetFileOffset());
         }
     }
 
@@ -99,15 +100,15 @@ public class WarcReader : IDisposable
     /// <returns></returns>
     private RawRecord GetNextRawRecord()
     {
-        var nextRecord = new RawRecord(fileStream.Position);
+        var nextRecord = new RawRecord(recordNumber, GetFileOffset());
+        recordNumber++;
+        lineReader.RecordNumber = recordNumber;
 
-        lineReader.SetRecordStart(fileStream.Position);
-
-        string line = lineReader.GetLine(inputStream);
+        string line = lineReader.GetLine();
         while (line.Length > 0)
         {
             nextRecord.AddHeaderLine(line);
-            line = lineReader.GetLine(inputStream);
+            line = lineReader.GetLine();
         }
 
         EnsureRequiredRawFields(nextRecord);
@@ -128,13 +129,13 @@ public class WarcReader : IDisposable
                 endOfRecordBuffer[2] != 13 ||
                 endOfRecordBuffer[3] != 10)
             {
-                throw new WarcFormatException(inputStream.Position, "Could not find CRLFCRLF at end of record. Record's Content-Length field may be incorrect.");
+                throw new WarcFormatException("Could not find CRLFCRLF at end of record. Record's Content-Length field may be incorrect.", recordNumber, GetFileOffset());
             }
 
         }
         catch (EndOfStreamException)
         {
-            throw new WarcFormatException(inputStream.Position, "File ends with incomplete record. Record's Content-Length field may be incorrect, or record is prematurely truncated.");
+            throw new WarcFormatException("File ends with incomplete record. Record's Content-Length field may be incorrect, or record is prematurely truncated.", recordNumber, GetFileOffset());
         }
 
         if (fileStream.Position >= fileStream.Length)
@@ -144,6 +145,10 @@ public class WarcReader : IDisposable
 
         return nextRecord;
     }
+
+    private long? GetFileOffset()
+    => inputStream.CanSeek ? inputStream.Position : null;
+
 
     protected virtual void Dispose(bool disposing)
     {
