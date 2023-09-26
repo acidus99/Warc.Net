@@ -20,20 +20,36 @@ internal class LineReader
         inputStream = input;
     }
 
-	public string GetLine()
+	public string? GetLine()
 	{
         int bufferPosition = 0;
         while (bufferPosition < lineBuffer.Length)
         {
-            byte curr = GetByte();
+            int curr = inputStream.ReadByte();
+            //we hit an EOF
+            if(curr == -1)
+            {
+                //if we have nothing in our buffer, this is the natural end of the file
+                if (bufferPosition == 0)
+                {
+                    return null;
+                }
+                //otherwise this is malformed WARC record
+                throw new WarcFormatException("Tried to read past the end of the stream. May be a incorrect Content-Length or truncated record.", RecordNumber, GetFileOffset());
+            }
 
             //look for the CRLF ending...
             if (curr == 13)
             {
                 //control characters are not allowed in headers, so this must be start of CRLF
-                curr = GetByte();
+                curr = inputStream.ReadByte();
                 if (curr != 10)
                 {
+                    //look for more specific "read passed EOF" condition
+                    if(curr == -1)
+                    {
+                        throw new WarcFormatException("Tried to read past the end of the stream. May be a incorrect Content-Length or truncated record.", RecordNumber, GetFileOffset());
+                    }
                     throw new WarcFormatException("Illegal character in field. CR not followed by a LF.", RecordNumber, GetFileOffset());
                 }
                 //got a CRLF, so return the line
@@ -41,15 +57,17 @@ internal class LineReader
                 {
                     return System.Text.Encoding.UTF8.GetString(lineBuffer, 0, bufferPosition);
                 }
-                return "";
+                return null;
             }
             else
             {
-                if(IsInvalidFieldCharacter(curr))
+                byte b = (byte)curr;
+
+                if(IsInvalidFieldCharacter(b))
                 {
-                    throw new WarcFormatException($"Illegal character '0x{curr.ToString("X2")}' in field.", RecordNumber, GetFileOffset());
+                    throw new WarcFormatException($"Illegal character '0x{b.ToString("X2")}' in field.", RecordNumber, GetFileOffset());
                 }
-                lineBuffer[bufferPosition] = curr;
+                lineBuffer[bufferPosition] = b;
                 bufferPosition++;
             }
         }
@@ -59,16 +77,6 @@ internal class LineReader
     //check for control characters and delete
     public static bool IsInvalidFieldCharacter(byte b)
         => (b < 32 || b == 127);
-
-    private byte GetByte()
-    {
-        int curr = inputStream.ReadByte();
-        if (curr == -1)
-        {
-            throw new WarcFormatException("Tried to read past the end of the stream. May be a incorrect Content-Length or truncated record.", RecordNumber, GetFileOffset());
-        }
-        return (byte)curr;
-    }
 
     private long? GetFileOffset()
         => inputStream.CanSeek ? inputStream.Position : null;

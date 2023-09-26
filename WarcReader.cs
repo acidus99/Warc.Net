@@ -7,8 +7,6 @@ public class WarcReader : IDisposable
 {
     byte[] endOfRecordBuffer = new byte[4];
 
-    public bool HasRecords { get; private set; } = true;
-
     Stream fileStream;
     Stream inputStream;
 
@@ -16,6 +14,8 @@ public class WarcReader : IDisposable
     bool isCompressed = false;
     private bool isDisposed;
     int recordNumber = 0;
+
+    bool isEOF = false;
 
     public string Filename { get; private set; }
 
@@ -40,13 +40,18 @@ public class WarcReader : IDisposable
         List<string> foo = new List<string>();
     }
 
-    public WarcRecord GetNext()
+    public WarcRecord? GetNextRecord()
     {
-        if (!HasRecords)
+        if (isEOF)
         {
-            throw new IndexOutOfRangeException("No more records are available");
+            return null;
         }
-        var rawRecord = GetNextRawRecord();
+        RawRecord? rawRecord = GetNextRawRecord();
+        if(rawRecord == null)
+        {
+            isEOF = true;
+            return null;
+        }
         return ParseRawRecord(rawRecord);
     }
 
@@ -95,31 +100,54 @@ public class WarcReader : IDisposable
     }
 
     /// <summary>
-    /// reads the stream and returns a minimally parsed record
+    /// Reads the stream and returns a minimally parsed record. Returns a null on EOF
     /// </summary>
     /// <returns></returns>
-    private RawRecord GetNextRawRecord()
+    private RawRecord? GetNextRawRecord()
+    {
+        RawRecord? nextRecord = GetRecordFields();
+        PopulateRecordBody(nextRecord);
+        return nextRecord;
+    }
+
+    private RawRecord? GetRecordFields()
     {
         var nextRecord = new RawRecord(recordNumber, GetFileOffset());
         recordNumber++;
         lineReader.RecordNumber = recordNumber;
 
-        string line = lineReader.GetLine();
-        while (line.Length > 0)
+        string? line;
+        do
         {
-            nextRecord.AddHeaderLine(line);
             line = lineReader.GetLine();
+            nextRecord.AddHeaderLine(line);
+        } while (line != null);
+
+        //if the record is empty, we have hit the end of the file and have no more records
+        if (nextRecord.IsEmpty)
+        {
+            return null;
         }
 
+        //now validate the fields were valid
         EnsureRequiredRawFields(nextRecord);
 
+        return nextRecord;
+    }
+
+    private void PopulateRecordBody(RawRecord? rawRecord)
+    {
+        if(rawRecord == null)
+        {
+            return;
+        }
         try
         {
             //does the record have a body? if so, read it in
-            if (nextRecord.ContentLength! > 0)
+            if (rawRecord.ContentLength! > 0)
             {
                 //now read in exactly the size of the content bytes
-                inputStream.ReadExactly(nextRecord.ContentBytes!, 0, nextRecord.ContentLength.Value);
+                inputStream.ReadExactly(rawRecord.ContentBytes!, 0, rawRecord.ContentLength.Value);
             }
 
             //read and verify the trailing CRLFCRLF
@@ -137,13 +165,6 @@ public class WarcReader : IDisposable
         {
             throw new WarcFormatException("File ends with incomplete record. Record's Content-Length field may be incorrect, or record is prematurely truncated.", recordNumber, GetFileOffset());
         }
-
-        if (fileStream.Position >= fileStream.Length)
-        {
-            HasRecords = false;
-        }
-
-        return nextRecord;
     }
 
     private long? GetFileOffset()
