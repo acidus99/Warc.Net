@@ -3,7 +3,7 @@
 using System.Collections;
 using System.IO.Compression;
 
-public class WarcReader : IDisposable
+public class WarcReader : IEnumerable<WarcRecord>, IDisposable
 {
     byte[] endOfRecordBuffer = new byte[4];
 
@@ -40,6 +40,10 @@ public class WarcReader : IDisposable
         List<string> foo = new List<string>();
     }
 
+    /// <summary>
+    /// Gets the next WARC record. If no records are available (such as EOF), returns null
+    /// </summary>
+    /// <returns></returns>
     public WarcRecord? GetNextRecord()
     {
         if (isEOF)
@@ -47,7 +51,7 @@ public class WarcReader : IDisposable
             return null;
         }
         RawRecord? rawRecord = GetNextRawRecord();
-        if(rawRecord == null)
+        if (rawRecord == null)
         {
             isEOF = true;
             return null;
@@ -137,7 +141,7 @@ public class WarcReader : IDisposable
 
     private void PopulateRecordBody(RawRecord? rawRecord)
     {
-        if(rawRecord == null)
+        if (rawRecord == null)
         {
             return;
         }
@@ -192,5 +196,20 @@ public class WarcReader : IDisposable
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    public IEnumerator<WarcRecord> GetEnumerator()
+    {
+        return new WarcRecordEnumerator(this);
+    }
+
+    // Must also implement IEnumerable.GetEnumerator, but implement as a private method.
+    private IEnumerator GetEnumerator1()
+    {
+        return this.GetEnumerator();
+    }
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator1();
     }
 }
