@@ -1,62 +1,73 @@
 ﻿namespace Warc;
 
-using System.Reflection.PortableExecutable;
-using System.Text;
+using System.Collections;
+using System.IO.Compression;
 
-public class WarcParser
+public class WarcReader
 {
-
     byte[] endOfRecordBuffer = new byte[4];
 
     public bool HasRecords { get; private set; } = true;
+
+    Stream fileStream;
     Stream inputStream;
+
     LineReader lineReader;
+    bool isCompressed = false;
 
     public string Filename { get; private set; }
 
-    public WarcParser(string filename)
+    public WarcReader(string filename)
     {
         Filename = filename;
-        inputStream = File.OpenRead(filename);
-        lineReader = new LineReader(inputStream);
+        var info = new FileInfo(filename);
+        // Checks whether per-record compression based on *.gz file extension is used
+        if (info.Extension == ".gz")
+        {
+            isCompressed = true;
+        }
+
+        fileStream = File.OpenRead(filename);
+
+        inputStream = isCompressed ?
+            new GZipStream(fileStream, CompressionMode.Decompress) :
+            fileStream;
+
+        lineReader = new LineReader();
+
+        List<string> foo = new List<string>();
     }
 
-    public WarcRecord? GetNext()
+    public WarcRecord GetNext()
     {
         if (!HasRecords)
         {
-            return null;
+            throw new IndexOutOfRangeException("No more records are available");
         }
-        try
+        var rawRecord = GetNextRawRecord();
+        return ParseRawRecord(rawRecord);
+    }
+
+    private WarcRecord ParseRawRecord(RawRecord rawRecord)
+    {
+        //internal record-specific constructors handle additional parsing
+        switch (rawRecord.Type)
         {
-            var rawRecord = GetNextRawRecord();
+            case RecordType.Metadata:
+                return new MetadataRecord(rawRecord);
 
-            //internal record-specific constructors handle additional parsing
-            switch (rawRecord.Type)
-            {
-                case RecordType.Metadata:
-                    return new MetadataRecord(rawRecord);
+            case RecordType.Request:
+                return new RequestRecord(rawRecord);
 
-                case RecordType.Request:
-                    return new RequestRecord(rawRecord);
+            case RecordType.Response:
+                return new ResponseRecord(rawRecord);
 
-                case RecordType.Response:
-                    return new ResponseRecord(rawRecord);
+            case RecordType.WarcInfo:
+                return new WarcInfoRecord(rawRecord);
 
-                case RecordType.WarcInfo:
-                    return new WarcInfoRecord(rawRecord);
-
-                default:
-                    return new UnknownRecord(rawRecord);
-            }
+            default:
+                return new UnknownRecord(rawRecord);
         }
-        catch (WarcFormatException ex)
-        {
-            Console.WriteLine(ex);
-            throw ex;
-        }
-        
-        return null;
     }
 
     /// <summary>
@@ -66,16 +77,16 @@ public class WarcParser
     /// <exception cref="WarcFormatException"></exception>
     private void EnsureRequiredRawFields(RawRecord rawRecord)
     {
-        if(rawRecord.Type == null)
+        if (rawRecord.Type == null)
         {
             throw new WarcFormatException(rawRecord.Offset, "Record missing required WARC Type field.");
         }
-        if(rawRecord.Version == null)
+        if (rawRecord.Version == null)
         {
             throw new WarcFormatException(rawRecord.Offset, "Record missing required WARC Version field.");
         }
 
-        if(rawRecord.ContentLength == null)
+        if (rawRecord.ContentLength == null)
         {
             throw new WarcFormatException(rawRecord.Offset, "Record missing required Content-Length field.");
         }
@@ -87,20 +98,21 @@ public class WarcParser
     /// <returns></returns>
     private RawRecord GetNextRawRecord()
     {
-        var nextRecord = new RawRecord(inputStream.Position);
+        var nextRecord = new RawRecord(fileStream.Position);
 
-        string line = lineReader.GetLine();
+        lineReader.SetRecordStart(fileStream.Position);
+
+        string line = lineReader.GetLine(inputStream);
         while (line.Length > 0)
         {
             nextRecord.AddHeaderLine(line);
-            line = lineReader.GetLine();
+            line = lineReader.GetLine(inputStream);
         }
 
         EnsureRequiredRawFields(nextRecord);
 
         try
         {
-
             //does the record have a body? if so, read it in
             if (nextRecord.ContentLength! > 0)
             {
@@ -124,11 +136,12 @@ public class WarcParser
             throw new WarcFormatException(inputStream.Position, "File ends with incomplete record. Record's Content-Length field may be incorrect, or record is prematurely truncated.");
         }
 
-        if(inputStream.Position >= inputStream.Length)
+        if (fileStream.Position >= fileStream.Length)
         {
             HasRecords = false;
         }
 
         return nextRecord;
     }
+
 }
