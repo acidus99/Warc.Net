@@ -1,93 +1,93 @@
-﻿using System;
+﻿namespace Warc;
+
+using System;
 using System.Text;
 
-namespace Warc
+
+public class WarcInfoRecord : WarcRecord
 {
-	public class WarcInfoRecord : WarcRecord
-	{
 
-        /// <summary>
-        /// Helper property, lets use set/get UTF-8 string for the ContentBlock for this record.
-        /// If you perfer, you can just set the ContentBlock directly
-        /// </summary>
-        public string? ContentText
+    /// <summary>
+    /// Helper property, lets use set/get UTF-8 string for the ContentBlock for this record.
+    /// If you perfer, you can just set the ContentBlock directly
+    /// </summary>
+    public string? ContentText
+    {
+        get
         {
-            get
-            {
-                return ContentLength > 0 ?
-                    Encoding.UTF8.GetString(ContentBlock!) :
-                    null;
-            }
-
-            set
-            {
-                if (value == null)
-                {
-                    ContentBlock = null;
-                }
-                else
-                {
-                    ContentBlock = Encoding.UTF8.GetBytes(value);
-                }
-            }
+            return ContentLength > 0 ?
+                Encoding.UTF8.GetString(ContentBlock!) :
+                null;
         }
 
-        private string? contentType;
-        /// <summary>
-        /// Optional field. Maps to the "Content-Type" WARC header.
-        /// Only makes sense with a non-empty Content Block
-        /// </summary>
-        public string? ContentType
+        set
         {
-            get => contentType;
-            set
+            if (value == null)
             {
-                contentType = ValidateLegalFieldCharacters(value);
+                ContentBlock = null;
+            }
+            else
+            {
+                ContentBlock = Encoding.UTF8.GetBytes(value);
             }
         }
+    }
 
-        private string? filename;
-        /// <summary>
-        /// Optional field. Maps to the "WARC-Filename" WARC header.
-        /// The filename containing this warcinfo record.
-        /// </summary>
-        public string? Filename
+    private string? contentType;
+    /// <summary>
+    /// Optional field. Maps to the "Content-Type" WARC header.
+    /// Only makes sense with a non-empty Content Block
+    /// </summary>
+    public string? ContentType
+    {
+        get => contentType;
+        set
         {
-            get => filename;
-            set
-            {
-                filename = ValidateLegalFieldCharacters(value);
-            }
+            contentType = ValidateLegalFieldCharacters(value);
         }
+    }
 
-        public override string Type => RecordType.WarcInfo;
-
-        public WarcInfoRecord() { }
-
-        internal WarcInfoRecord(RawRecord rawRecord)
-            : base(rawRecord)
-        { }		
-
-        protected override bool ParseRecordHeader(string name, string value)
+    private string? filename;
+    /// <summary>
+    /// Optional field. Maps to the "WARC-Filename" WARC header.
+    /// The filename containing this warcinfo record.
+    /// </summary>
+    public string? Filename
+    {
+        get => filename;
+        set
         {
-            switch (name)
-            {
-                case NormalizedWarcHeaders.ContentType:
-                    contentType = value;
-                    return true;
-
-                case NormalizedWarcHeaders.Filename:
-                    filename = value;
-                    return true;
-            }
-            return false;
+            filename = ValidateLegalFieldCharacters(value);
         }
+    }
 
-        protected override void AppendRecordHeaders(StringBuilder builder)
+    public override string Type => RecordType.WarcInfo;
+
+    public WarcInfoRecord() { }
+
+    internal WarcInfoRecord(RawRecord rawRecord)
+        : base(rawRecord)
+    { }		
+
+    protected override bool ParseRecordHeader(string name, string value)
+    {
+        switch (name)
         {
-            AppendHeaderIfExists(builder, WarcHeaders.Filename, Filename);
-            AppendHeaderIfExists(builder, WarcHeaders.ContentType, ContentType);
+            case NormalizedWarcHeaders.ContentType:
+                contentType = value;
+                return true;
+
+            case NormalizedWarcHeaders.Filename:
+                filename = value;
+                return true;
         }
+        return false;
+    }
+
+    protected override void AppendRecordHeaders(StringBuilder builder)
+    {
+        AppendHeaderIfExists(builder, WarcHeaders.Filename, Filename);
+        AppendHeaderIfExists(builder, WarcHeaders.ContentType, ContentType);
     }
 }
 
