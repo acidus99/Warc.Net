@@ -33,14 +33,23 @@ internal class RawRecord
 
     public readonly int RecordNumber;
 
+    public bool IsEmpty { get; private set; } = true;
+
     internal RawRecord(int record, long? offset)
     {
         RecordNumber = record;
         Offset = offset;
     }
 
-    public void AddHeaderLine(string headerLine)
+    public void AddHeaderLine(string? headerLine)
     {
+        if(headerLine == null)
+        {
+            return;
+        }
+
+        IsEmpty = false;
+
         if(Version == null)
         {
             if (string.Compare(headerLine, 0, HeaderVersion, 0, HeaderVersion.Length, true) == 0)
