@@ -9,11 +9,11 @@
 
   <ItemGroup>
     <None Remove=".gitignore" />
-    <None Remove="Parser\" />
-    <None Remove="Utils\" />
+    <None Remove="Reader\" />
+    <None Remove="Writer\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Parser\" />
-    <Folder Include="Utils\" />
+    <Folder Include="Reader\" />
+    <Folder Include="Writer\" />
   </ItemGroup>
 </Project>
