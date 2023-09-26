@@ -13,10 +13,10 @@ public class WarcReader : IEnumerable<WarcRecord>, IDisposable
     LineReader lineReader;
     bool isCompressed = false;
     private bool isDisposed;
-    int recordNumber = 0;
 
     bool isEOF = false;
 
+    public int RecordsRead { get; private set; } = 0;
     public string Filename { get; private set; }
 
     public WarcReader(string filename)
@@ -90,16 +90,16 @@ public class WarcReader : IEnumerable<WarcRecord>, IDisposable
     {
         if (rawRecord.Type == null)
         {
-            throw new WarcFormatException("Record missing required WARC Type field.", recordNumber, GetFileOffset());
+            throw new WarcFormatException("Record missing required WARC Type field.", RecordsRead, GetFileOffset());
         }
         if (rawRecord.Version == null)
         {
-            throw new WarcFormatException("Record missing required WARC Version field.", recordNumber, GetFileOffset());
+            throw new WarcFormatException("Record missing required WARC Version field.", RecordsRead, GetFileOffset());
         }
 
         if (rawRecord.ContentLength == null)
         {
-            throw new WarcFormatException("Record missing required Content-Length field.", recordNumber, GetFileOffset());
+            throw new WarcFormatException("Record missing required Content-Length field.", RecordsRead, GetFileOffset());
         }
     }
 
@@ -116,9 +116,10 @@ public class WarcReader : IEnumerable<WarcRecord>, IDisposable
 
     private RawRecord? GetRecordFields()
     {
-        var nextRecord = new RawRecord(recordNumber, GetFileOffset());
-        recordNumber++;
-        lineReader.RecordNumber = recordNumber;
+        RecordsRead++;
+        var nextRecord = new RawRecord(RecordsRead, GetFileOffset());
+        
+        lineReader.RecordNumber = RecordsRead;
 
         string? line;
         do
@@ -130,6 +131,7 @@ public class WarcReader : IEnumerable<WarcRecord>, IDisposable
         //if the record is empty, we have hit the end of the file and have no more records
         if (nextRecord.IsEmpty)
         {
+            RecordsRead--;
             return null;
         }
 
@@ -161,13 +163,13 @@ public class WarcReader : IEnumerable<WarcRecord>, IDisposable
                 endOfRecordBuffer[2] != 13 ||
                 endOfRecordBuffer[3] != 10)
             {
-                throw new WarcFormatException("Could not find CRLFCRLF at end of record. Record's Content-Length field may be incorrect.", recordNumber, GetFileOffset());
+                throw new WarcFormatException("Could not find CRLFCRLF at end of record. Record's Content-Length field may be incorrect.", RecordsRead, GetFileOffset());
             }
 
         }
         catch (EndOfStreamException)
         {
-            throw new WarcFormatException("File ends with incomplete record. Record's Content-Length field may be incorrect, or record is prematurely truncated.", recordNumber, GetFileOffset());
+            throw new WarcFormatException("File ends with incomplete record. Record's Content-Length field may be incorrect, or record is prematurely truncated.", RecordsRead, GetFileOffset());
         }
     }
 
