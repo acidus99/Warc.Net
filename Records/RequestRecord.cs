@@ -1,4 +1,4 @@
-﻿namespace Warc;
+﻿namespace WarcDotNet;
 
 using System;
 using System.Text;

@@ -1,4 +1,4 @@
-﻿namespace Warc;
+﻿namespace WarcDotNet;
 
 using System.Collections;
 using System.IO.Compression;

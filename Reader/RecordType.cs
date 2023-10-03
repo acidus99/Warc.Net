@@ -1,4 +1,4 @@
-﻿namespace Warc;
+﻿namespace WarcDotNet;
 
 /// <summary>
 /// All known WARC record types

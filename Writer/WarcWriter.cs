@@ -1,4 +1,4 @@
-﻿namespace Warc;
+﻿namespace WarcDotNet;
 
 using System;
 using System.IO;
@@ -69,6 +69,12 @@ public class WarcWriter : IDisposable
     /// </summary>
     /// <remarks>This is useful to know when splitting a large record into multiple smaller WARCs.</remarks>
     public long Length => fout.Length;
+
+    /// <summary>
+    /// Allow direct calling of close to ensure data is flushed for programs that are not leveraging a "using(...) construct
+    /// </summary>
+    public void Close()
+        => fout.Close();
 
     public void Dispose()
     {
