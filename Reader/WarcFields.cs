@@ -24,7 +24,7 @@ public static class WarcFields
 }
 
 /// <summary>
-/// case-insentivie versions of the WARC header names
+/// case-insentivie versions of the WARC field names
 /// </summary>
 internal static class NormalizedWarcFields
 {

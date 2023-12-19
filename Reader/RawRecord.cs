@@ -8,7 +8,7 @@ using System;
 /// - What type of record?
 /// - What's the version?
 /// - What's the content bytes and length (if any)
-/// - List of headerlines 
+/// - List of field lines
 /// </summary>
 internal class RawRecord
 {
@@ -24,7 +24,7 @@ internal class RawRecord
 
     public byte[]? ContentBytes = null;
 
-    public List<string> headers = new List<string>(16);
+    public List<string> fields = new List<string>(16);
 
     /// <summary>
     /// The byte offset of beginning of this WARC record in the file
@@ -41,9 +41,9 @@ internal class RawRecord
         Offset = offset;
     }
 
-    public void AddHeaderLine(string? headerLine)
+    public void AddFieldLine(string? fieldLine)
     {
-        if(headerLine == null)
+        if(fieldLine == null)
         {
             return;
         }
@@ -52,31 +52,31 @@ internal class RawRecord
 
         if(Version == null)
         {
-            if (string.Compare(headerLine, 0, VersionField, 0, VersionField.Length, true) == 0)
+            if (string.Compare(fieldLine, 0, VersionField, 0, VersionField.Length, true) == 0)
             {
-                Version = headerLine.Substring(VersionField.Length);
+                Version = fieldLine.Substring(VersionField.Length);
                 return;
             }
         }
 
         if (Type == null)
         {
-            if (string.Compare(headerLine, 0, TypeField, 0, TypeField.Length, true) == 0)
+            if (string.Compare(fieldLine, 0, TypeField, 0, TypeField.Length, true) == 0)
             {
-                Type = headerLine.Substring(TypeField.Length).TrimStart();
+                Type = fieldLine.Substring(TypeField.Length).TrimStart();
                 return;
             }
         }
 
         if (ContentLength == null)
         {
-            if (string.Compare(headerLine, 0, ContentLengthField, 0, ContentLengthField.Length, true) == 0)
+            if (string.Compare(fieldLine, 0, ContentLengthField, 0, ContentLengthField.Length, true) == 0)
             {
-                ContentLength = Convert.ToInt32(headerLine.Substring(ContentLengthField.Length));
+                ContentLength = Convert.ToInt32(fieldLine.Substring(ContentLengthField.Length));
                 ContentBytes = new byte[ContentLength.Value];
                 return;
             }
         }
-        headers.Add(headerLine);
+        fields.Add(fieldLine);
     }
 }

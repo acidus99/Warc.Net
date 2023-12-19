@@ -41,7 +41,7 @@ internal class LineReader
             //look for the CRLF ending...
             if (curr == 13)
             {
-                //control characters are not allowed in headers, so this must be start of CRLF
+                //control characters are not allowed in fields, so this must be start of CRLF
                 curr = inputStream.ReadByte();
                 if (curr != 10)
                 {

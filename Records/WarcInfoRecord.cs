@@ -34,7 +34,7 @@ public class WarcInfoRecord : WarcRecord
 
     private string? contentType;
     /// <summary>
-    /// Optional field. Maps to the "Content-Type" WARC header.
+    /// Optional field. Maps to the "Content-Type" WARC field.
     /// Only makes sense with a non-empty Content Block
     /// </summary>
     public string? ContentType
@@ -48,7 +48,7 @@ public class WarcInfoRecord : WarcRecord
 
     private string? filename;
     /// <summary>
-    /// Optional field. Maps to the "WARC-Filename" WARC header.
+    /// Optional field. Maps to the "WARC-Filename" WARC field.
     /// The filename containing this warcinfo record.
     /// </summary>
     public string? Filename
@@ -68,7 +68,7 @@ public class WarcInfoRecord : WarcRecord
         : base(rawRecord)
     { }		
 
-    protected override bool ParseRecordHeader(string name, string value)
+    protected override bool ParseRecordField(string name, string value)
     {
         switch (name)
         {
@@ -83,10 +83,10 @@ public class WarcInfoRecord : WarcRecord
         return false;
     }
 
-    protected override void AppendRecordHeaders(StringBuilder builder)
+    protected override void AppendRecordFields(StringBuilder builder)
     {
-        AppendHeaderIfExists(builder, WarcFields.Filename, Filename);
-        AppendHeaderIfExists(builder, WarcFields.ContentType, ContentType);
+        AppendFieldIfExists(builder, WarcFields.Filename, Filename);
+        AppendFieldIfExists(builder, WarcFields.ContentType, ContentType);
     }
 }
 
