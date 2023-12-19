@@ -178,23 +178,23 @@ public abstract class WarcRecord
     {
         switch (name)
         {
-            case NormalizedWarcHeaders.BlockDigest:
+            case NormalizedWarcFields.BlockDigest:
                 BlockDigest = value;
                 return true;
 
-            case NormalizedWarcHeaders.Date:
+            case NormalizedWarcFields.Date:
                 Date = DateTime.Parse(value);
                 return true;
 
-            case NormalizedWarcHeaders.RecordId:
+            case NormalizedWarcFields.RecordId:
                 Id = ParseUri(value);
                 return true;
 
-            case NormalizedWarcHeaders.SegmentNumber:
+            case NormalizedWarcFields.SegmentNumber:
                 Segment = Convert.ToInt32(value);
                 return true;
 
-            case NormalizedWarcHeaders.Truncated:
+            case NormalizedWarcFields.Truncated:
                 Truncated = value;
                 return true;
         }
@@ -263,14 +263,14 @@ public abstract class WarcRecord
         // required headers first
         sb.Append($"WARC/{Version}\r\n");
         sb.Append(FormatHeader("WARC-Type", Type));
-        sb.Append(FormatHeader(WarcHeaders.Date, FormatDate(Date)));
-        sb.Append(FormatHeader(WarcHeaders.RecordId, FormatUrl(Id)));
+        sb.Append(FormatHeader(WarcFields.Date, FormatDate(Date)));
+        sb.Append(FormatHeader(WarcFields.RecordId, FormatUrl(Id)));
         sb.Append(FormatHeader("Content-Length", ContentLength.ToString()));
 
         //add common, optional headers next
-        AppendHeaderIfExists(sb, WarcHeaders.BlockDigest, BlockDigest);
-        AppendHeaderIfExists(sb, WarcHeaders.SegmentNumber, Segment);
-        AppendHeaderIfExists(sb, WarcHeaders.Truncated, Truncated);
+        AppendHeaderIfExists(sb, WarcFields.BlockDigest, BlockDigest);
+        AppendHeaderIfExists(sb, WarcFields.SegmentNumber, Segment);
+        AppendHeaderIfExists(sb, WarcFields.Truncated, Truncated);
 
         //add record-specific headers
         AppendRecordHeaders(sb);

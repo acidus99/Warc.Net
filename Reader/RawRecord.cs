@@ -12,9 +12,9 @@ using System;
 /// </summary>
 internal class RawRecord
 {
-    const string HeaderContentLength = "content-length:";
-    const string HeaderType = "warc-type:";
-    const string HeaderVersion = "warc/";
+    const string ContentLengthField = "content-length:";
+    const string TypeField = "warc-type:";
+    const string VersionField = "warc/";
 
     public string? Version { get; private set; }
 
@@ -52,27 +52,27 @@ internal class RawRecord
 
         if(Version == null)
         {
-            if (string.Compare(headerLine, 0, HeaderVersion, 0, HeaderVersion.Length, true) == 0)
+            if (string.Compare(headerLine, 0, VersionField, 0, VersionField.Length, true) == 0)
             {
-                Version = headerLine.Substring(HeaderVersion.Length);
+                Version = headerLine.Substring(VersionField.Length);
                 return;
             }
         }
 
         if (Type == null)
         {
-            if (string.Compare(headerLine, 0, HeaderType, 0, HeaderType.Length, true) == 0)
+            if (string.Compare(headerLine, 0, TypeField, 0, TypeField.Length, true) == 0)
             {
-                Type = headerLine.Substring(HeaderType.Length).TrimStart();
+                Type = headerLine.Substring(TypeField.Length).TrimStart();
                 return;
             }
         }
 
         if (ContentLength == null)
         {
-            if (string.Compare(headerLine, 0, HeaderContentLength, 0, HeaderContentLength.Length, true) == 0)
+            if (string.Compare(headerLine, 0, ContentLengthField, 0, ContentLengthField.Length, true) == 0)
             {
-                ContentLength = Convert.ToInt32(headerLine.Substring(HeaderContentLength.Length));
+                ContentLength = Convert.ToInt32(headerLine.Substring(ContentLengthField.Length));
                 ContentBytes = new byte[ContentLength.Value];
                 return;
             }

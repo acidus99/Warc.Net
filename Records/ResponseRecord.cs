@@ -84,17 +84,17 @@ public class ResponseRecord : WarcRecord
     {
         foreach (Uri uri in ConcurrentTo)
         {
-            builder.Append(FormatHeader(WarcHeaders.ConcurrentTo, FormatUrl(uri)));
+            builder.Append(FormatHeader(WarcFields.ConcurrentTo, FormatUrl(uri)));
         }
-        AppendHeaderIfExists(builder, WarcHeaders.ContentType, ContentType);
-        AppendHeaderIfExists(builder, WarcHeaders.IpAddress, IpAddress);
+        AppendHeaderIfExists(builder, WarcFields.ContentType, ContentType);
+        AppendHeaderIfExists(builder, WarcFields.IpAddress, IpAddress);
         if (TargetUri != null)
         {
-            builder.Append(FormatHeader(WarcHeaders.TargetUri, TargetUri.AbsoluteUri));
+            builder.Append(FormatHeader(WarcFields.TargetUri, TargetUri.AbsoluteUri));
         }
-        AppendHeaderIfExists(builder, WarcHeaders.WarcInfoId, WarcInfoId);
-        AppendHeaderIfExists(builder, WarcHeaders.IdentifiedPayloadType, IdentifiedPayloadType);
-        AppendHeaderIfExists(builder, WarcHeaders.PayloadDigest, PayloadDigest);
+        AppendHeaderIfExists(builder, WarcFields.WarcInfoId, WarcInfoId);
+        AppendHeaderIfExists(builder, WarcFields.IdentifiedPayloadType, IdentifiedPayloadType);
+        AppendHeaderIfExists(builder, WarcFields.PayloadDigest, PayloadDigest);
 
     }
 
@@ -102,31 +102,31 @@ public class ResponseRecord : WarcRecord
     {
         switch (name)
         {
-            case NormalizedWarcHeaders.ContentType:
+            case NormalizedWarcFields.ContentType:
                 ContentType = value;
                 return true;
 
-            case NormalizedWarcHeaders.ConcurrentTo:
+            case NormalizedWarcFields.ConcurrentTo:
                 ConcurrentTo.Add(ParseUri(value));
                 return true;
 
-            case NormalizedWarcHeaders.IpAddress:
+            case NormalizedWarcFields.IpAddress:
                 IpAddress = value;
                 return true;
 
-            case NormalizedWarcHeaders.IdentifiedPayloadType:
+            case NormalizedWarcFields.IdentifiedPayloadType:
                 IdentifiedPayloadType = value;
                 return true;
 
-            case NormalizedWarcHeaders.PayloadDigest:
+            case NormalizedWarcFields.PayloadDigest:
                 PayloadDigest = value;
                 return true;
 
-            case NormalizedWarcHeaders.TargetUri:
+            case NormalizedWarcFields.TargetUri:
                 TargetUri = ParseUri(value);
                 return true;
 
-            case NormalizedWarcHeaders.WarcInfoId:
+            case NormalizedWarcFields.WarcInfoId:
                 WarcInfoId = ParseUri(value);
                 return true;
         }

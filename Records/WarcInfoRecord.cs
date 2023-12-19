@@ -6,7 +6,6 @@ using System.Text;
 
 public class WarcInfoRecord : WarcRecord
 {
-
     /// <summary>
     /// Helper property, lets use set/get UTF-8 string for the ContentBlock for this record.
     /// If you perfer, you can just set the ContentBlock directly
@@ -73,11 +72,11 @@ public class WarcInfoRecord : WarcRecord
     {
         switch (name)
         {
-            case NormalizedWarcHeaders.ContentType:
+            case NormalizedWarcFields.ContentType:
                 contentType = value;
                 return true;
 
-            case NormalizedWarcHeaders.Filename:
+            case NormalizedWarcFields.Filename:
                 filename = value;
                 return true;
         }
@@ -86,8 +85,8 @@ public class WarcInfoRecord : WarcRecord
 
     protected override void AppendRecordHeaders(StringBuilder builder)
     {
-        AppendHeaderIfExists(builder, WarcHeaders.Filename, Filename);
-        AppendHeaderIfExists(builder, WarcHeaders.ContentType, ContentType);
+        AppendHeaderIfExists(builder, WarcFields.Filename, Filename);
+        AppendHeaderIfExists(builder, WarcFields.ContentType, ContentType);
     }
 }
 
