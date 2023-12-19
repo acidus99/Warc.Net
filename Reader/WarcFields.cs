@@ -3,9 +3,9 @@
 using System;
 
 /// <summary>
-/// Constants of properly formatted WARC header names
+/// Constants of properly formatted WARC field names
 /// </summary>
-internal static class WarcHeaders
+public static class WarcFields
 {
     public const string BlockDigest = "WARC-Block-Digest";
     public const string ConcurrentTo = "WARC-Concurrent-To";
@@ -26,7 +26,7 @@ internal static class WarcHeaders
 /// <summary>
 /// case-insentivie versions of the WARC header names
 /// </summary>
-internal static class NormalizedWarcHeaders
+internal static class NormalizedWarcFields
 {
     public const string BlockDigest = "warc-block-digest";
     public const string ConcurrentTo = "warc-concurrent-to";
