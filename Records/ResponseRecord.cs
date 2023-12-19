@@ -7,14 +7,14 @@ public class ResponseRecord : WarcRecord
 {
 
     /// <summary>
-    /// Optional field. Maps to the "WARC-Concurrent-To" WARC header.
+    /// Optional field. Maps to the "WARC-Concurrent-To" WARC field.
     ///  The WARC-Record-ID of any records created as part of the same capture event as the current record. Relates this record to one or more records.
     /// </summary>
     public List<Uri> ConcurrentTo = new List<Uri>();
 
     private string? contentType;
     /// <summary>
-    /// Optional field. Maps to the "Content-Type" WARC header.
+    /// Optional field. Maps to the "Content-Type" WARC field.
     /// Only makes sense with a non-empty Content Block
     /// </summary>
     public string? ContentType
@@ -28,7 +28,7 @@ public class ResponseRecord : WarcRecord
 
     private string? ipAddress;
     /// <summary>
-    /// Optional field. Maps to the "WARC-IP-Address" WARC header.
+    /// Optional field. Maps to the "WARC-IP-Address" WARC field.
     /// The IP address address contacted to retrieve any included content.
     /// </summary>
     public string? IpAddress
@@ -42,7 +42,7 @@ public class ResponseRecord : WarcRecord
 
     private string? identifiedPayloadType;
     /// <summary>
-    /// Optional. Maps to the "WARC-Identified-Payload-Type".
+    /// Optional. Maps to the "WARC-Identified-Payload-Type" field.
     /// The content type of the "meaningful" payload inside the content block (if any)
     /// </summary>
     public string? IdentifiedPayloadType
@@ -55,13 +55,13 @@ public class ResponseRecord : WarcRecord
     }
 
     /// <summary>
-    /// Optional. Maps to the "WARC-Payload-Digest" header.
+    /// Optional. Maps to the "WARC-Payload-Digest" field. 
     /// A digest of the "meaningful" payload inside the content block (if any)
     /// </summary>
     public string? PayloadDigest { get; set; }
 
     /// <summary>
-    /// Optional field. Maps to the "WARC-Target-URI" WARC header.
+    /// Optional field. Maps to the "WARC-Target-URI" WARC field.
     /// The original URI whose capture gave rise to the information content in this record
     /// </summary>
     public Uri? TargetUri { get; set; }
@@ -69,7 +69,7 @@ public class ResponseRecord : WarcRecord
     public override string Type => RecordType.Response;
 
     /// <summary>
-    /// Optional field. Maps to the WARC-Warcinfo-ID" WARC header.
+    /// Optional field. Maps to the WARC-Warcinfo-ID" WARC field.
     /// When present, the WARC-Warcinfo-ID indicates the WARC-Record-ID of the associated ‘warcinfo’ record for this record.
     /// </summary>
     public Uri? WarcInfoId { get; set; }
@@ -80,53 +80,53 @@ public class ResponseRecord : WarcRecord
         : base(rawRecord)
     { }
 
-    protected override void AppendRecordHeaders(StringBuilder builder)
+    protected override void AppendRecordFields(StringBuilder builder)
     {
         foreach (Uri uri in ConcurrentTo)
         {
-            builder.Append(FormatHeader(WarcHeaders.ConcurrentTo, FormatUrl(uri)));
+            builder.Append(FormatField(WarcFields.ConcurrentTo, FormatUrl(uri)));
         }
-        AppendHeaderIfExists(builder, WarcHeaders.ContentType, ContentType);
-        AppendHeaderIfExists(builder, WarcHeaders.IpAddress, IpAddress);
+        AppendFieldIfExists(builder, WarcFields.ContentType, ContentType);
+        AppendFieldIfExists(builder, WarcFields.IpAddress, IpAddress);
         if (TargetUri != null)
         {
-            builder.Append(FormatHeader(WarcHeaders.TargetUri, TargetUri.AbsoluteUri));
+            builder.Append(FormatField(WarcFields.TargetUri, TargetUri.AbsoluteUri));
         }
-        AppendHeaderIfExists(builder, WarcHeaders.WarcInfoId, WarcInfoId);
-        AppendHeaderIfExists(builder, WarcHeaders.IdentifiedPayloadType, IdentifiedPayloadType);
-        AppendHeaderIfExists(builder, WarcHeaders.PayloadDigest, PayloadDigest);
+        AppendFieldIfExists(builder, WarcFields.WarcInfoId, WarcInfoId);
+        AppendFieldIfExists(builder, WarcFields.IdentifiedPayloadType, IdentifiedPayloadType);
+        AppendFieldIfExists(builder, WarcFields.PayloadDigest, PayloadDigest);
 
     }
 
-    protected override bool ParseRecordHeader(string name, string value)
+    protected override bool ParseRecordField(string name, string value)
     {
         switch (name)
         {
-            case NormalizedWarcHeaders.ContentType:
+            case NormalizedWarcFields.ContentType:
                 ContentType = value;
                 return true;
 
-            case NormalizedWarcHeaders.ConcurrentTo:
+            case NormalizedWarcFields.ConcurrentTo:
                 ConcurrentTo.Add(ParseUri(value));
                 return true;
 
-            case NormalizedWarcHeaders.IpAddress:
+            case NormalizedWarcFields.IpAddress:
                 IpAddress = value;
                 return true;
 
-            case NormalizedWarcHeaders.IdentifiedPayloadType:
+            case NormalizedWarcFields.IdentifiedPayloadType:
                 IdentifiedPayloadType = value;
                 return true;
 
-            case NormalizedWarcHeaders.PayloadDigest:
+            case NormalizedWarcFields.PayloadDigest:
                 PayloadDigest = value;
                 return true;
 
-            case NormalizedWarcHeaders.TargetUri:
+            case NormalizedWarcFields.TargetUri:
                 TargetUri = ParseUri(value);
                 return true;
 
-            case NormalizedWarcHeaders.WarcInfoId:
+            case NormalizedWarcFields.WarcInfoId:
                 WarcInfoId = ParseUri(value);
                 return true;
         }

@@ -6,7 +6,6 @@ using System.Text;
 
 public class WarcInfoRecord : WarcRecord
 {
-
     /// <summary>
     /// Helper property, lets use set/get UTF-8 string for the ContentBlock for this record.
     /// If you perfer, you can just set the ContentBlock directly
@@ -35,7 +34,7 @@ public class WarcInfoRecord : WarcRecord
 
     private string? contentType;
     /// <summary>
-    /// Optional field. Maps to the "Content-Type" WARC header.
+    /// Optional field. Maps to the "Content-Type" WARC field.
     /// Only makes sense with a non-empty Content Block
     /// </summary>
     public string? ContentType
@@ -49,7 +48,7 @@ public class WarcInfoRecord : WarcRecord
 
     private string? filename;
     /// <summary>
-    /// Optional field. Maps to the "WARC-Filename" WARC header.
+    /// Optional field. Maps to the "WARC-Filename" WARC field.
     /// The filename containing this warcinfo record.
     /// </summary>
     public string? Filename
@@ -69,25 +68,25 @@ public class WarcInfoRecord : WarcRecord
         : base(rawRecord)
     { }		
 
-    protected override bool ParseRecordHeader(string name, string value)
+    protected override bool ParseRecordField(string name, string value)
     {
         switch (name)
         {
-            case NormalizedWarcHeaders.ContentType:
+            case NormalizedWarcFields.ContentType:
                 contentType = value;
                 return true;
 
-            case NormalizedWarcHeaders.Filename:
+            case NormalizedWarcFields.Filename:
                 filename = value;
                 return true;
         }
         return false;
     }
 
-    protected override void AppendRecordHeaders(StringBuilder builder)
+    protected override void AppendRecordFields(StringBuilder builder)
     {
-        AppendHeaderIfExists(builder, WarcHeaders.Filename, Filename);
-        AppendHeaderIfExists(builder, WarcHeaders.ContentType, ContentType);
+        AppendFieldIfExists(builder, WarcFields.Filename, Filename);
+        AppendFieldIfExists(builder, WarcFields.ContentType, ContentType);
     }
 }
 

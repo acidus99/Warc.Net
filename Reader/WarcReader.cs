@@ -82,7 +82,7 @@ public class WarcReader : IEnumerable<WarcRecord>, IDisposable
     }
 
     /// <summary>
-    /// validates that a raw records contains the minimum required headers
+    /// validates that a raw records contains the minimum required fields
     /// </summary>
     /// <param name="rawRecord"></param>
     /// <exception cref="WarcFormatException"></exception>
@@ -125,7 +125,7 @@ public class WarcReader : IEnumerable<WarcRecord>, IDisposable
         do
         {
             line = lineReader.GetLine();
-            nextRecord.AddHeaderLine(line);
+            nextRecord.AddFieldLine(line);
         } while (line != null);
 
         //if the record is empty, we have hit the end of the file and have no more records

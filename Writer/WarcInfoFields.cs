@@ -6,13 +6,16 @@ using System.Text;
 /// <summary>
 /// Helper class for creating WARC files for warcinfo and metadata records
 /// </summary>
-public class WarcFields : List<WarcField>
+public class WarcInfoFields : List<WarcInfoField>
 {
+	/// <summary>
+	/// The content type to use on a warcinfo record
+	/// </summary>
 	public const string ContentType = "application/warc-fields";
 
 	public void Add(string name, string value)
 	{
-		Add(new WarcField { Name = name, Value = value });
+		Add(new WarcInfoField { Name = name, Value = value });
 	}
 
 	public void Add(string name, object value)
@@ -33,7 +36,7 @@ public class WarcFields : List<WarcField>
 /// <summary>
 /// name/value pairs 
 /// </summary>
-public class WarcField
+public class WarcInfoField
 {
 	public required string Name { get; set; }
 

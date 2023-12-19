@@ -16,11 +16,11 @@ public class UnknownRecord : WarcRecord
         : base(rawRecord)
     { }
 
-    protected override void AppendRecordHeaders(StringBuilder builder)
+    protected override void AppendRecordFields(StringBuilder builder)
     {
     }
 
-    protected override bool ParseRecordHeader(string name, string value)
+    protected override bool ParseRecordField(string name, string value)
     {
         return false;
     }

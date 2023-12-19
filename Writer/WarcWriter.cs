@@ -136,11 +136,11 @@ public class WarcWriter : IDisposable
     /// </summary>
     /// <param name="record">A <see cref="Record"/>.</param>
     /// <param name="stream">A <see cref="Stream"/>.</param>
-    /// <remarks>Handles the headers and optional block.</remarks>
+    /// <remarks>Handles the fields and optional block.</remarks>
     private static void WriteRecordToStream(WarcRecord record, Stream stream)
     {
         // Writes the header
-        var header = record.GetHeaders();
+        var header = record.GetHeader();
         stream.Write(Encoding.UTF8.GetBytes(header));
         stream.WriteByte(CarriageReturn);
         stream.WriteByte(LineFeed);

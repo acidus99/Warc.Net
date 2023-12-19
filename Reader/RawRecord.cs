@@ -8,13 +8,13 @@ using System;
 /// - What type of record?
 /// - What's the version?
 /// - What's the content bytes and length (if any)
-/// - List of headerlines 
+/// - List of field lines
 /// </summary>
 internal class RawRecord
 {
-    const string HeaderContentLength = "content-length:";
-    const string HeaderType = "warc-type:";
-    const string HeaderVersion = "warc/";
+    const string ContentLengthField = "content-length:";
+    const string TypeField = "warc-type:";
+    const string VersionField = "warc/";
 
     public string? Version { get; private set; }
 
@@ -24,7 +24,7 @@ internal class RawRecord
 
     public byte[]? ContentBytes = null;
 
-    public List<string> headers = new List<string>(16);
+    public List<string> fields = new List<string>(16);
 
     /// <summary>
     /// The byte offset of beginning of this WARC record in the file
@@ -41,9 +41,9 @@ internal class RawRecord
         Offset = offset;
     }
 
-    public void AddHeaderLine(string? headerLine)
+    public void AddFieldLine(string? fieldLine)
     {
-        if(headerLine == null)
+        if(fieldLine == null)
         {
             return;
         }
@@ -52,31 +52,31 @@ internal class RawRecord
 
         if(Version == null)
         {
-            if (string.Compare(headerLine, 0, HeaderVersion, 0, HeaderVersion.Length, true) == 0)
+            if (string.Compare(fieldLine, 0, VersionField, 0, VersionField.Length, true) == 0)
             {
-                Version = headerLine.Substring(HeaderVersion.Length);
+                Version = fieldLine.Substring(VersionField.Length);
                 return;
             }
         }
 
         if (Type == null)
         {
-            if (string.Compare(headerLine, 0, HeaderType, 0, HeaderType.Length, true) == 0)
+            if (string.Compare(fieldLine, 0, TypeField, 0, TypeField.Length, true) == 0)
             {
-                Type = headerLine.Substring(HeaderType.Length).TrimStart();
+                Type = fieldLine.Substring(TypeField.Length).TrimStart();
                 return;
             }
         }
 
         if (ContentLength == null)
         {
-            if (string.Compare(headerLine, 0, HeaderContentLength, 0, HeaderContentLength.Length, true) == 0)
+            if (string.Compare(fieldLine, 0, ContentLengthField, 0, ContentLengthField.Length, true) == 0)
             {
-                ContentLength = Convert.ToInt32(headerLine.Substring(HeaderContentLength.Length));
+                ContentLength = Convert.ToInt32(fieldLine.Substring(ContentLengthField.Length));
                 ContentBytes = new byte[ContentLength.Value];
                 return;
             }
         }
-        headers.Add(headerLine);
+        fields.Add(fieldLine);
     }
 }
