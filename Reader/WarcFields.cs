@@ -24,22 +24,22 @@ public static class WarcFields
 }
 
 /// <summary>
-/// case-insentivie versions of the WARC field names used for faster parsing / matching
+/// case-insentivie versions of the WARC field names
 /// </summary>
 internal static class NormalizedWarcFields
 {
-    public static readonly string BlockDigest = WarcFields.BlockDigest.ToLower();
-    public static readonly string ConcurrentTo = WarcFields.ConcurrentTo.ToLower();
-    public static readonly string ContentType = WarcFields.ContentType.ToLower();
-    public static readonly string Date = WarcFields.Date.ToLower();
-    public static readonly string Filename = WarcFields.Filename.ToLower();
-    public static readonly string IdentifiedPayloadType = WarcFields.IdentifiedPayloadType.ToLower();
-    public static readonly string IpAddress = WarcFields.IpAddress.ToLower();
-    public static readonly string PayloadDigest = WarcFields.PayloadDigest.ToLower();
-    public static readonly string RecordId = WarcFields.RecordId.ToLower();
-    public static readonly string RefersTo = WarcFields.RefersTo.ToLower();
-    public static readonly string SegmentNumber = WarcFields.SegmentNumber.ToLower();
-    public static readonly string TargetUri = WarcFields.TargetUri.ToLower();
-    public static readonly string Truncated = WarcFields.Truncated.ToLower();
-    public static readonly string WarcInfoId = WarcFields.WarcInfoId.ToLower();
+    public const string BlockDigest = "warc-block-digest";
+    public const string ConcurrentTo = "warc-concurrent-to";
+    public const string ContentType = "content-type";
+    public const string Date = "warc-date";
+    public const string Filename = "warc-filename";
+    public const string IdentifiedPayloadType = "warc-identified-payload-type";
+    public const string IpAddress = "warc-ip-address";
+    public const string PayloadDigest = "warc-payload-digest";
+    public const string RecordId = "warc-record-id";
+    public const string RefersTo = "warc-refers-to";
+    public const string SegmentNumber = "warc-segment-number";
+    public const string TargetUri = "warc-target-uri";
+    public const string Truncated = "warc-truncated";
+    public const string WarcInfoId = "warc-warcinfo-id";
 }
