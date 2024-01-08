@@ -40,7 +40,7 @@ public abstract class WarcRecord
     /// <summary>
     /// Any custom WARC fields
     /// </summary>
-    public IDictionary<string, string> CustomFields = new Dictionary<string, string>();
+    public FieldCollection CustomFields = new FieldCollection();
 
     /// <summary>
     /// Required. Maps to the "WARC-Date" field.
@@ -127,36 +127,13 @@ public abstract class WarcRecord
                     continue;
                 }
                 //unknonwn field, so added to list of custom field
-                //if there are duplicates, last value of the field wins
-                //TODO: This is wrong. There can be mulitple versions of the same field, and they should be appended together like HTTP headers
-                //see: https://github.com/ArchiveTeam/wget-lua/releases/tag/v1.21.3-at.20231213.01 which uses multiple WARC-Protocol fields
-                AddCustomField(name, value);
+                //duplicates are supported
+                CustomFields.Add(name, value);
             }
             else
             {
                 throw new WarcFormatException($"Malformed WARC field. Missing ':' delimiter in line {fieldNumber}.", rawRecord);
             }
-        }
-    }
-
-    /// <summary>
-    /// Adds a custom WARC field. Field name and value are checked for illegal characters
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="value"></param>
-    /// <exception cref="ArgumentNullException"></exception>
-    public void AddCustomField(string name, string? value)
-    {
-        if(name == null)
-        {
-            throw new ArgumentNullException(nameof(name), "Custom field name cannot be null.");
-        }
-
-        if (!string.IsNullOrWhiteSpace(value))
-        {
-            name = ValidateFieldValue(name)!;
-            value = ValidateFieldValue(value)!;
-            CustomFields[name] = value;
         }
     }
 
@@ -280,9 +257,12 @@ public abstract class WarcRecord
         AppendRecordFields(sb);
 
         //add custom fields
-        foreach(var nvp in CustomFields)
+        foreach(string fieldName in CustomFields.Fields)
         {
-            sb.Append(FormatField(nvp.Key, nvp.Value));
+            foreach (string value in CustomFields[fieldName])
+            {
+                sb.Append(FormatField(fieldName, value));
+            }
         }
 
         return sb.ToString();
