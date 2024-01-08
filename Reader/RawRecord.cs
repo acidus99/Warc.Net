@@ -24,7 +24,7 @@ internal class RawRecord
 
     public byte[]? ContentBytes = null;
 
-    public List<string> fields = new List<string>(16);
+    public List<string> FieldsLines = new List<string>(16);
 
     /// <summary>
     /// The byte offset of beginning of this WARC record in the file
@@ -77,6 +77,6 @@ internal class RawRecord
                 return;
             }
         }
-        fields.Add(fieldLine);
+        FieldsLines.Add(fieldLine);
     }
 }
