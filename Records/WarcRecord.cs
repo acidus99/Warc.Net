@@ -20,7 +20,7 @@ public abstract class WarcRecord
         get => blockDigest;
         set
         {
-            blockDigest = ValidateLegalFieldCharacters(value);
+            blockDigest = ValidateFieldValue(value);
         }
     }
 
@@ -70,7 +70,7 @@ public abstract class WarcRecord
         get => truncated;
         set
         {
-            truncated = ValidateLegalFieldCharacters(value);
+            truncated = ValidateFieldValue(value);
         }
     }
 
@@ -106,7 +106,7 @@ public abstract class WarcRecord
     private void ParseFields(RawRecord rawRecord)
     {
         int fieldNumber = 0;
-        foreach (var fieldLine in rawRecord.fields)
+        foreach (var fieldLine in rawRecord.FieldsLines)
         {
             fieldNumber++;
 
@@ -154,8 +154,8 @@ public abstract class WarcRecord
 
         if (!string.IsNullOrWhiteSpace(value))
         {
-            name = ValidateLegalFieldCharacters(name)!;
-            value = ValidateLegalFieldCharacters(value)!;
+            name = ValidateFieldValue(name)!;
+            value = ValidateFieldValue(value)!;
             CustomFields[name] = value;
         }
     }
@@ -204,21 +204,22 @@ public abstract class WarcRecord
         return false;
     }
 
-    protected string? ValidateLegalFieldCharacters(string? field)
+    /// <summary>
+    /// Checks if a string contains allowed characters for a field value.
+    /// </summary>
+    /// <param name="fieldValue">field value to use</param>
+    /// <returns>field value if it is allowed</returns>
+    /// <exception cref="FormatException">if fieldValue conttains illegal characters </exception>
+    protected string? ValidateFieldValue(string? fieldValue)
     {
-        if(field == null)
+        if (fieldValue != null)
         {
-            return field;
-        }
-
-        foreach(var c in field)
-        {
-            if(char.IsControl(c) || c == 127)
+            if (!FieldValidator.IsAllowedValue(fieldValue))
             {
-                throw new FormatException($"Field cannot contain illegal character '0x{((byte)c).ToString("X2")}'.");
+                throw new FormatException($"Field value '{fieldValue}' contains illegal character");
             }
         }
-        return field;
+        return fieldValue;
     }
 
     /// <summary>

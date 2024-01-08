@@ -42,7 +42,7 @@ public class WarcInfoRecord : WarcRecord
         get => contentType;
         set
         {
-            contentType = ValidateLegalFieldCharacters(value);
+            contentType = ValidateFieldValue(value);
         }
     }
 
@@ -56,7 +56,7 @@ public class WarcInfoRecord : WarcRecord
         get => filename;
         set
         {
-            filename = ValidateLegalFieldCharacters(value);
+            filename = ValidateFieldValue(value);
         }
     }
 

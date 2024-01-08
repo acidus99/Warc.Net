@@ -48,7 +48,7 @@ public class MetadataRecord : WarcRecord
         get => contentType;
         set
         {
-            contentType = ValidateLegalFieldCharacters(value);
+            contentType = ValidateFieldValue(value);
         }
     }
 
@@ -62,7 +62,7 @@ public class MetadataRecord : WarcRecord
         get => ipAddress;
         set
         {
-            ipAddress = ValidateLegalFieldCharacters(value);
+            ipAddress = ValidateFieldValue(value);
         }
     }
 
@@ -76,7 +76,7 @@ public class MetadataRecord : WarcRecord
         get => identifiedPayloadType;
         set
         {
-            identifiedPayloadType = ValidateLegalFieldCharacters(value);
+            identifiedPayloadType = ValidateFieldValue(value);
         }
     }
 
@@ -90,7 +90,7 @@ public class MetadataRecord : WarcRecord
         get => payloadDigest;
         set
         {
-            payloadDigest = ValidateLegalFieldCharacters(value);
+            payloadDigest = ValidateFieldValue(value);
         }
     }
 

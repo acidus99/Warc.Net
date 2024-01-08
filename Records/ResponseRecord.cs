@@ -22,7 +22,7 @@ public class ResponseRecord : WarcRecord
         get => contentType;
         set
         {
-            contentType = ValidateLegalFieldCharacters(value);
+            contentType = ValidateFieldValue(value);
         }
     }
 
@@ -36,7 +36,7 @@ public class ResponseRecord : WarcRecord
         get => ipAddress;
         set
         {
-            ipAddress = ValidateLegalFieldCharacters(value);
+            ipAddress = ValidateFieldValue(value);
         }
     }
 
@@ -50,7 +50,7 @@ public class ResponseRecord : WarcRecord
         get => identifiedPayloadType;
         set
         {
-            identifiedPayloadType = ValidateLegalFieldCharacters(value);
+            identifiedPayloadType = ValidateFieldValue(value);
         }
     }
 
