@@ -1,9 +1,6 @@
-﻿namespace WarcDotNet;
+﻿using System.Text;
 
-using System;
-using System.Net.Mime;
-using System.Text;
-
+namespace WarcDotNet;
 
 public class UnknownRecord : WarcRecord
 {

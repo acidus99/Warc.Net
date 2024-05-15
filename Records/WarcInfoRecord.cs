@@ -1,8 +1,6 @@
-﻿namespace WarcDotNet;
+﻿using System.Text;
 
-using System;
-using System.Text;
-
+namespace WarcDotNet;
 
 public class WarcInfoRecord : WarcRecord
 {
@@ -66,7 +64,7 @@ public class WarcInfoRecord : WarcRecord
 
     internal WarcInfoRecord(RawRecord rawRecord)
         : base(rawRecord)
-    { }		
+    { }
 
     protected override bool ParseRecordField(string name, string value)
     {
@@ -89,4 +87,3 @@ public class WarcInfoRecord : WarcRecord
         AppendFieldIfExists(builder, WarcFields.ContentType, ContentType);
     }
 }
-

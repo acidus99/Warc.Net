@@ -5,7 +5,7 @@
 /// </summary>
 public static class RecordType
 {
-	public const string Continuation = "continuation";
+    public const string Continuation = "continuation";
     public const string Conversion = "conversion";
     public const string Metadata = "metadata";
     public const string Request = "request";

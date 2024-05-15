@@ -1,8 +1,5 @@
 ﻿namespace WarcDotNet;
 
-using System.Collections.Generic;
-using System.Linq;
-
 /// <summary>
 /// Implements a collection of WARC fields
 /// * Handles duplicate field names
@@ -46,12 +43,12 @@ public class FieldCollection
     /// <param name="value"></param>
     public void Add(string fieldName, string value)
     {
-        if(!FieldValidator.IsAllowedName(fieldName))
+        if (!FieldValidator.IsAllowedName(fieldName))
         {
             throw new FormatException($"Field name '{fieldName}' contains illegal character");
         }
 
-        if(!FieldValidator.IsAllowedValue(value))
+        if (!FieldValidator.IsAllowedValue(value))
         {
             throw new FormatException($"Field value '{value}' contains illegal character");
         }
@@ -108,4 +105,3 @@ public class FieldCollection
     private string NormalizeFieldName(string fieldName)
         => fieldName.ToLower();
 }
-

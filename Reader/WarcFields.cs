@@ -1,7 +1,5 @@
 ﻿namespace WarcDotNet;
 
-using System;
-
 /// <summary>
 /// Constants of properly formatted WARC field names
 /// </summary>

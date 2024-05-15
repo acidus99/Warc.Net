@@ -1,7 +1,6 @@
-﻿namespace WarcDotNet;
+﻿using System.Text;
 
-using System;
-using System.Text;
+namespace WarcDotNet;
 
 public class ResponseRecord : WarcRecord
 {

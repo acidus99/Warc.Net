@@ -1,16 +1,13 @@
-﻿namespace WarcDotNet;
-
-using System;
-using System.IO;
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Text;
+
+namespace WarcDotNet;
 
 /// <summary>
 /// Represents a writer for WARC files that are formatted according to version 1.1 and 1.0.
 /// </summary>
 public class WarcWriter : IDisposable
 {
-
     private const byte CarriageReturn = 13;
     private const byte LineFeed = 10;
 
@@ -146,7 +143,7 @@ public class WarcWriter : IDisposable
         stream.WriteByte(LineFeed);
 
         // Writes the block, if any
-        if(record.ContentLength > 0)
+        if (record.ContentLength > 0)
         {
             stream.Write(record.ContentBlock);
         }

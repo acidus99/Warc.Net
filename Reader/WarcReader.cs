@@ -1,7 +1,7 @@
-﻿namespace WarcDotNet;
-
-using System.Collections;
+﻿using System.Collections;
 using System.IO.Compression;
+
+namespace WarcDotNet;
 
 public class WarcReader : IEnumerable<WarcRecord>, IDisposable
 {
@@ -118,7 +118,7 @@ public class WarcReader : IEnumerable<WarcRecord>, IDisposable
     {
         RecordsRead++;
         var nextRecord = new RawRecord(RecordsRead, GetFileOffset());
-        
+
         lineReader.RecordNumber = RecordsRead;
 
         string? line;

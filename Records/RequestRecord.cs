@@ -1,7 +1,6 @@
-﻿namespace WarcDotNet;
+﻿using System.Text;
 
-using System;
-using System.Text;
+namespace WarcDotNet;
 
 public class RequestRecord : WarcRecord
 {
@@ -89,14 +88,14 @@ public class RequestRecord : WarcRecord
 
     protected override void AppendRecordFields(StringBuilder builder)
     {
-        foreach(Uri uri in ConcurrentTo)
+        foreach (Uri uri in ConcurrentTo)
         {
             builder.Append(FormatField(WarcFields.ConcurrentTo, FormatUrl(uri)));
         }
         AppendFieldIfExists(builder, WarcFields.ContentType, ContentType);
         AppendFieldIfExists(builder, WarcFields.IpAddress, IpAddress);
 
-        if(TargetUri != null)
+        if (TargetUri != null)
         {
             builder.Append(FormatField(WarcFields.TargetUri, TargetUri.AbsoluteUri));
         }

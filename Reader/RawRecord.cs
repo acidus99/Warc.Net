@@ -1,7 +1,5 @@
 ﻿namespace WarcDotNet;
 
-using System;
-
 /// <summary>
 /// Represents a minimumly parsed record. This is only used internally by the parser.
 ///
@@ -43,14 +41,14 @@ internal class RawRecord
 
     public void AddFieldLine(string? fieldLine)
     {
-        if(fieldLine == null)
+        if (fieldLine == null)
         {
             return;
         }
 
         IsEmpty = false;
 
-        if(Version == null)
+        if (Version == null)
         {
             if (string.Compare(fieldLine, 0, VersionField, 0, VersionField.Length, true) == 0)
             {

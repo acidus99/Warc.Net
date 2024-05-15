@@ -1,7 +1,5 @@
 ﻿namespace WarcDotNet;
 
-using System.IO;
-
 /// <summary>
 /// Reads the lines representing WARC fields from an input stream
 /// </summary>
@@ -20,14 +18,14 @@ internal class LineReader
         inputStream = input;
     }
 
-	public string? GetLine()
-	{
+    public string? GetLine()
+    {
         int bufferPosition = 0;
         while (bufferPosition < lineBuffer.Length)
         {
             int curr = inputStream.ReadByte();
             //we hit an EOF
-            if(curr == -1)
+            if (curr == -1)
             {
                 //if we have nothing in our buffer, this is the natural end of the file
                 if (bufferPosition == 0)
@@ -46,7 +44,7 @@ internal class LineReader
                 if (curr != 10)
                 {
                     //look for more specific "read passed EOF" condition
-                    if(curr == -1)
+                    if (curr == -1)
                     {
                         throw new WarcFormatException("Tried to read past the end of the stream. May be a incorrect Content-Length or truncated record.", RecordNumber, GetFileOffset());
                     }
@@ -63,7 +61,7 @@ internal class LineReader
             {
                 byte b = (byte)curr;
 
-                if(IsInvalidFieldCharacter(b))
+                if (IsInvalidFieldCharacter(b))
                 {
                     throw new WarcFormatException($"Illegal character '0x{b.ToString("X2")}' in field.", RecordNumber, GetFileOffset());
                 }

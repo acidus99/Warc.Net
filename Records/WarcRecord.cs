@@ -1,15 +1,12 @@
-﻿namespace WarcDotNet;
+﻿using System.Text;
 
-using System;
-using System.Collections.Generic;
-using System.Text;
+namespace WarcDotNet;
 
 /// <summary>
 /// Common abstract base class for all WARC Records
 /// </summary>
 public abstract class WarcRecord
 {
-
     private string? blockDigest;
     /// <summary>
     /// Optional. Maps to the "WARC-Block-Digest" field.
@@ -143,7 +140,7 @@ public abstract class WarcRecord
     /// <param name="dateTime"></param>
     public void SetDate(DateTime? dateTime)
     {
-        if(dateTime != null)
+        if (dateTime != null)
         {
             Date = dateTime.Value;
         }
@@ -221,13 +218,13 @@ public abstract class WarcRecord
 
     protected Uri ParseUri(string uri)
     {
-        if(uri.Length < 3)
+        if (uri.Length < 3)
         {
             throw new ArgumentException("Invalid URI: provided URI too short", nameof(uri));
         }
 
         //strip < > around URI per WARC spec, if they exist
-        if (uri[0] == '<' && uri[uri.Length-1] == '>')
+        if (uri[0] == '<' && uri[uri.Length - 1] == '>')
         {
             uri = uri.Substring(1, uri.Length - 2);
         }
@@ -257,7 +254,7 @@ public abstract class WarcRecord
         AppendRecordFields(sb);
 
         //add custom fields
-        foreach(string fieldName in CustomFields.Fields)
+        foreach (string fieldName in CustomFields.Fields)
         {
             foreach (string value in CustomFields[fieldName])
             {

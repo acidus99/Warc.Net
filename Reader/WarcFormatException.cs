@@ -1,6 +1,6 @@
-﻿namespace WarcDotNet;
+﻿using System.Text;
 
-using System.Text;
+namespace WarcDotNet;
 
 /// <summary>
 /// Hold information about malformed WARCs
@@ -18,7 +18,7 @@ public class WarcFormatException : FormatException
     /// </summary>
     public long? RecordOffset { get; private set; }
 
-    public WarcFormatException(string message, int  recordNumber, long? offset)
+    public WarcFormatException(string message, int recordNumber, long? offset)
         : base(message)
     {
         RecordNumber = recordNumber;
@@ -27,13 +27,13 @@ public class WarcFormatException : FormatException
 
     internal WarcFormatException(string message, RawRecord record)
         : this(message, record.RecordNumber, record.Offset)
-    {}
+    { }
 
     public override string ToString()
     {
         var sb = new StringBuilder();
         sb.Append($"Warc Format Exception. Record {RecordNumber}");
-        if(RecordOffset.HasValue)
+        if (RecordOffset.HasValue)
         {
             sb.Append($" Offset: {RecordOffset}");
         }

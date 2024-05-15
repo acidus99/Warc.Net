@@ -37,9 +37,9 @@ internal static class FieldValidator
 
     public static bool IsAllowedValue(string s)
     {
-        foreach(char c in s)
+        foreach (char c in s)
         {
-            if(!IsAllowedValue(c))
+            if (!IsAllowedValue(c))
             {
                 return false;
             }

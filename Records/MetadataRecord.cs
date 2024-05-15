@@ -1,11 +1,9 @@
-﻿namespace WarcDotNet;
+﻿using System.Text;
 
-using System;
-using System.Text;
+namespace WarcDotNet;
 
 public class MetadataRecord : WarcRecord
 {
-
     /// <summary>
     /// Optional field. Maps to the "WARC-Concurrent-To" WARC field.
     ///  The WARC-Record-ID of any records created as part of the same capture event as the current record. Relates this record to one or more records.
@@ -122,14 +120,14 @@ public class MetadataRecord : WarcRecord
 
     protected override void AppendRecordFields(StringBuilder builder)
     {
-        foreach(Uri uri in ConcurrentTo)
+        foreach (Uri uri in ConcurrentTo)
         {
             builder.Append(FormatField(WarcFields.ConcurrentTo, FormatUrl(uri)));
         }
         AppendFieldIfExists(builder, WarcFields.ContentType, ContentType);
         AppendFieldIfExists(builder, WarcFields.IpAddress, IpAddress);
 
-        if(TargetUri != null)
+        if (TargetUri != null)
         {
             builder.Append(FormatField(WarcFields.TargetUri, TargetUri.AbsoluteUri));
         }
@@ -138,7 +136,6 @@ public class MetadataRecord : WarcRecord
         AppendFieldIfExists(builder, WarcFields.WarcInfoId, WarcInfoId);
         AppendFieldIfExists(builder, WarcFields.IdentifiedPayloadType, IdentifiedPayloadType);
         AppendFieldIfExists(builder, WarcFields.PayloadDigest, PayloadDigest);
-
     }
 
     protected override bool ParseRecordField(string name, string value)
